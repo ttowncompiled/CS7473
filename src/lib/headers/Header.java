@@ -1,4 +1,6 @@
-package lib;
+package lib.headers;
+
+import lib.Showable;
 
 public abstract class Header implements Showable {
 

@@ -1,4 +1,4 @@
-package lib;
+package util;
 
 public class BitString {
 	

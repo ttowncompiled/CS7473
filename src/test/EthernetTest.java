@@ -1,6 +1,6 @@
 package test;
 
-import lib.EthernetHeader;
+import lib.headers.EthernetHeader;
 
 public class EthernetTest {
 	

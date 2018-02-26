@@ -1,6 +1,6 @@
 package test;
 
-import lib.IPHeader;
+import lib.headers.IPHeader;
 
 public class IPTest {
 	

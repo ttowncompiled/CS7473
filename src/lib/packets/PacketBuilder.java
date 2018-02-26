@@ -1,4 +1,8 @@
-package lib;
+package lib.packets;
+
+import lib.Showable;
+import lib.headers.Header;
+import util.BitString;
 
 public class PacketBuilder implements Showable {
 

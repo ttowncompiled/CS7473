@@ -1,6 +1,6 @@
-package lib;
+package lib.headers;
 
-import util.Config;
+import util.*;
 
 public class EthernetHeader extends Header {
 

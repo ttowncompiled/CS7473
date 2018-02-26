@@ -1,4 +1,7 @@
-package lib;
+package lib.packets;
+
+import util.BitString;
+import lib.headers.NullHeader;
 
 public class DataPacket extends Packet {
 	

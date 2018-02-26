@@ -1,4 +1,4 @@
-package lib;
+package lib.headers;
 
 import util.Config;
 

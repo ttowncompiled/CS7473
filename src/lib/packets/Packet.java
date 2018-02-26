@@ -1,4 +1,7 @@
-package lib;
+package lib.packets;
+
+import lib.headers.Header;
+import lib.Showable;
 
 public class Packet implements Showable {
 
