@@ -3,19 +3,19 @@ package lib;
 public abstract class Packet implements Showable {
 
 	private Header header;
-	private String payload;
+	private String data;
 	
-	public Packet(Header header, String payload) {
+	public Packet(Header header, String data) {
 		this.header = header;
-		this.payload = payload;
+		this.data = data;
 	}
 	
 	public Header getHeader() {
 		return this.header;
 	}
 	
-	public String getPayload() {
-		return this.payload;
+	public String getData() {
+		return this.data;
 	}
 	
 	public String getType() {

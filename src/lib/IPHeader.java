@@ -1,7 +1,6 @@
 package lib;
 
 import util.Config;
-import util.Utils;
 
 public class IPHeader extends Header {
 	
@@ -18,6 +17,10 @@ public class IPHeader extends Header {
 	private int sourceAddress;
 	private int destinationAddress;
 	private int optionsPadding;
+	
+	public static IPHeader parse(String packet) {
+		return null;
+	}
 
 	public IPHeader(byte version, byte IHL, byte typeOfService, short totalLength, short identification, boolean[] flags, short fragOffset, byte timeToLive, byte protocol, short checksum, int source, int dest, int optionsPadding) {
 		super(Config.IP);
@@ -132,17 +135,17 @@ public class IPHeader extends Header {
 		
 		rep.append(IPHeader.bitIndices());
 		rep.append(IPHeader.separator());
-		rep.append("|").append(Utils.spaced(Utils.bitString(this.version, 4))).append("|").append(Utils.spaced(Utils.bitString(this.IPHeaderLength, 4))).append("|").append(Utils.spaced(Utils.bitString(this.typeOfService))).append("|").append(Utils.spaced(Utils.bitString(this.totalLength))).append("|\n");
+		rep.append("|").append(BitString.fromByte(this.version, 4).spaced()).append("|").append(BitString.fromByte(this.IPHeaderLength, 4).spaced()).append("|").append(BitString.fromByte(this.typeOfService).spaced()).append("|").append(BitString.fromShort(this.totalLength).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
-		rep.append("|").append(Utils.spaced(Utils.bitString(this.identification))).append("|").append(Utils.bitString(this.flags[0])).append(" ").append(Utils.bitString(this.flags[1])).append(" ").append(Utils.bitString(this.flags[2])).append("|").append(Utils.spaced(Utils.bitString(this.fragmentationOffset, 13))).append("|\n");
+		rep.append("|").append(BitString.fromShort(this.identification).spaced()).append("|").append(BitString.fromBits(this.flags).spaced()).append("|").append(BitString.fromShort(this.fragmentationOffset, 13).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
-		rep.append("|").append(Utils.spaced(Utils.bitString(this.timeToLive))).append("|").append(Utils.spaced(Utils.bitString(this.protocol))).append("|").append(Utils.spaced(Utils.bitString(this.checksum))).append("|\n");
+		rep.append("|").append(BitString.fromByte(this.timeToLive).spaced()).append("|").append(BitString.fromByte(this.protocol).spaced()).append("|").append(BitString.fromShort(this.checksum).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
-		rep.append("|").append(Utils.spaced(Utils.bitString(this.sourceAddress))).append("|\n");
+		rep.append("|").append(BitString.fromInt(this.sourceAddress).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
-		rep.append("|").append(Utils.spaced(Utils.bitString(this.destinationAddress))).append("|\n");
+		rep.append("|").append(BitString.fromInt(this.destinationAddress).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
-		rep.append("|").append(Utils.spaced(Utils.bitString(this.optionsPadding))).append("|\n");
+		rep.append("|").append(BitString.fromInt(this.optionsPadding).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
 		
 		return rep.toString();
