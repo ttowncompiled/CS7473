@@ -1,21 +1,21 @@
 package lib;
 
-public abstract class Packet implements Showable {
+public class Packet implements Showable {
 
 	private Header header;
-	private BitString data;
+	private Packet next;
 	
-	public Packet(Header header, BitString data) {
+	public Packet(Header header, Packet next) {
 		this.header = header;
-		this.data = data;
+		this.next = next;
 	}
 	
 	public Header getHeader() {
 		return this.header;
 	}
 	
-	public BitString getData() {
-		return this.data;
+	public Packet getNext() {
+		return this.next;
 	}
 	
 	public String getType() {
@@ -23,5 +23,11 @@ public abstract class Packet implements Showable {
 	}
 	
 	@Override
-	public abstract String toString();
+	public String toString() {
+		return new StringBuilder().append(this.header).append(this.next).append("\n").toString();
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
+	}
 }

@@ -65,6 +65,22 @@ public class BitString {
 		return new BitString(rep.toString());
 	}
 	
+	public static BitString fromLong(long l) {
+		return BitString.fromLong(l, 64);
+	}
+	
+	public static BitString fromLong(long l, int n) {
+		String longString = Long.toBinaryString(l);
+		StringBuilder rep = new StringBuilder();
+		if (longString.length() < n) {
+			for (int i = longString.length(); i < n; i++) {
+				rep.append("0");
+			}
+		}
+		rep.append(longString);
+		return new BitString(rep.toString());
+	}
+	
 	public BitString(String S) {
 		this.S = S;
 		this.spaced = false;
@@ -99,8 +115,8 @@ public class BitString {
 		return bits;
 	}
 	
-	private int toInt(int n) {
-		int i = 0;
+	private long toLong(int n) {
+		long i = 0;
 		int term = 1;
 		for (int j = 0; j < this.S.length() && j < n; j++) {
 			i += S.charAt(S.length()-1-j) == '1' ? term : 0;
@@ -110,15 +126,19 @@ public class BitString {
 	}
 	
 	public byte toByte() {
-		return (byte) this.toInt(8);
+		return (byte) this.toLong(8);
 	}
 	
 	public short toShort() {
-		return (short) this.toInt(16);
+		return (short) this.toLong(16);
 	}
 	
 	public int toInt() {
-		return this.toInt(32);
+		return (int) this.toLong(32);
+	}
+	
+	public long toLong() {
+		return this.toLong(64);
 	}
 	
 	@Override

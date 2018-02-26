@@ -14,4 +14,8 @@ public abstract class Header implements Showable {
 	
 	@Override
 	public abstract String toString();
+	
+	public void show() {
+		System.out.println(this.toString());
+	}
 }

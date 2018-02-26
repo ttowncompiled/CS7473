@@ -14,8 +14,8 @@ public class IPHeader extends Header {
 	private byte timeToLive;
 	private byte protocol;
 	private short checksum;
-	private int sourceAddress;
-	private int destinationAddress;
+	private int sourceIPAddress;
+	private int destinationIPAddress;
 	private int optionsPadding;
 	
 	public static IPHeader parse(BitString packet) {
@@ -47,8 +47,8 @@ public class IPHeader extends Header {
 		this.timeToLive = timeToLive;
 		this.protocol = protocol;
 		this.checksum = checksum;
-		this.sourceAddress = source;
-		this.destinationAddress = dest;
+		this.sourceIPAddress = source;
+		this.destinationIPAddress = dest;
 		this.optionsPadding = optionsPadding;
 	}
 	
@@ -92,12 +92,12 @@ public class IPHeader extends Header {
 		return this.checksum;
 	}
 	
-	public int getSourceAddress() {
-		return this.sourceAddress;
+	public int getSourceIPAddress() {
+		return this.sourceIPAddress;
 	}
 	
-	public int getDestinationAddress() {
-		return this.destinationAddress;
+	public int getDestinationIPAddress() {
+		return this.destinationIPAddress;
 	}
 	
 	public int getOptionsPadding() {
@@ -154,17 +154,13 @@ public class IPHeader extends Header {
 		rep.append(IPHeader.separator());
 		rep.append("|").append(BitString.fromByte(this.timeToLive).spaced()).append("|").append(BitString.fromByte(this.protocol).spaced()).append("|").append(BitString.fromShort(this.checksum).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
-		rep.append("|").append(BitString.fromInt(this.sourceAddress).spaced()).append("|\n");
+		rep.append("|").append(BitString.fromInt(this.sourceIPAddress).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
-		rep.append("|").append(BitString.fromInt(this.destinationAddress).spaced()).append("|\n");
+		rep.append("|").append(BitString.fromInt(this.destinationIPAddress).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
 		rep.append("|").append(BitString.fromInt(this.optionsPadding).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
 		
 		return rep.toString();
-	}
-	
-	public void show() {
-		System.out.println(this.toString());
 	}
 }
