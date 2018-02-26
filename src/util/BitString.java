@@ -95,12 +95,12 @@ public class BitString {
 		return new BitString(this.S.substring(j, k), this.spaced);
 	}
 	
-	public boolean isSpaced() {
-		return this.spaced;
-	}
-	
 	public BitString spaced() {
 		return new BitString(this.S, true);
+	}
+	
+	public boolean isSpaced() {
+		return this.spaced;
 	}
 	
 	public boolean toBool() {
