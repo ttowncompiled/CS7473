@@ -1,6 +1,8 @@
 package util;
 
-public class HexString {
+import lib.Showable;
+
+public class HexString implements Showable {
 
 	private String S;
 	private boolean spaced;
@@ -16,7 +18,7 @@ public class HexString {
 	}
 	
 	public HexString substring(int j, int k) {
-		return new HexString(this.S.substring(j, 2*k-j), this.spaced);
+		return new HexString(this.S.substring(2*j, 2*k), this.spaced);
 	}
 	
 	public HexString spaced() {
@@ -85,5 +87,9 @@ public class HexString {
 		}
 		rep.append(this.S.charAt(this.S.length()-2)).append(this.S.charAt(this.S.length()-1));
 		return rep.toString();
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
 	}
 }

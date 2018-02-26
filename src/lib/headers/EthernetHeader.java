@@ -8,6 +8,13 @@ public class EthernetHeader extends Header {
 	private long sourceMACAddress;
 	private short etherType;
 	
+	public static EthernetHeader parse(BitString packet) {
+		long destination = packet.substring(0, 48).toLong();
+		long source = packet.substring(48, 96).toLong();
+		short etherType = packet.substring(96, 112).toShort();
+		return new EthernetHeader(destination, source, etherType);
+	}
+	
 	public EthernetHeader(long destination, long source, short etherType) {
 		super(Config.ETHERNET);
 		this.destinationMACAddress = destination;

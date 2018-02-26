@@ -1,6 +1,8 @@
 package util;
 
-public class BitString {
+import lib.Showable;
+
+public class BitString implements Showable {
 	
 	private String S;
 	private boolean spaced;
@@ -152,5 +154,9 @@ public class BitString {
 		}
 		rep.append(this.S.charAt(this.S.length()-1));
 		return rep.toString();
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
 	}
 }
