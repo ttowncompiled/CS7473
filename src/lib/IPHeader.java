@@ -18,8 +18,21 @@ public class IPHeader extends Header {
 	private int destinationAddress;
 	private int optionsPadding;
 	
-	public static IPHeader parse(String packet) {
-		return null;
+	public static IPHeader parse(BitString packet) {
+		byte version = packet.substring(0, 4).toByte();
+		byte IHL = packet.substring(4, 8).toByte();
+		byte typeOfService = packet.substring(8, 16).toByte();
+		short totalLength = packet.substring(16, 32).toShort();
+		short identification = packet.substring(32, 48).toShort();
+		boolean[] flags = packet.substring(48, 51).toBits();
+		short fragOffset = packet.substring(51, 64).toShort();
+		byte timeToLive = packet.substring(64, 72).toByte();
+		byte protocol = packet.substring(72, 80).toByte();
+		short checksum = packet.substring(80, 96).toShort();
+		int source = packet.substring(96, 128).toInt();
+		int dest = packet.substring(128, 160).toInt();
+		int optionsPadding = IHL == 6 ? packet.substring(160, 192).toInt() : 0;
+		return new IPHeader(version, IHL, typeOfService, totalLength, identification, flags, fragOffset, timeToLive, protocol, checksum, source, dest, optionsPadding);
 	}
 
 	public IPHeader(byte version, byte IHL, byte typeOfService, short totalLength, short identification, boolean[] flags, short fragOffset, byte timeToLive, byte protocol, short checksum, int source, int dest, int optionsPadding) {

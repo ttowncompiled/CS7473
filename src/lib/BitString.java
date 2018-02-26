@@ -75,12 +75,50 @@ public class BitString {
 		this.spaced = spaced;
 	}
 	
+	public BitString substring(int j, int k) {
+		return new BitString(this.S.substring(j, k), this.spaced);
+	}
+	
 	public boolean isSpaced() {
 		return this.spaced;
 	}
 	
 	public BitString spaced() {
 		return new BitString(this.S, true);
+	}
+	
+	public boolean toBool() {
+		return S.charAt(S.length()-1) == '1';
+	}
+	
+	public boolean[] toBits() {
+		boolean[] bits = new boolean[S.length()];
+		for (int i = 0; i < S.length(); i++) {
+			bits[i] = S.charAt(i) == '1';
+		}
+		return bits;
+	}
+	
+	private int toInt(int n) {
+		int i = 0;
+		int term = 1;
+		for (int j = 0; j < this.S.length() && j < n; j++) {
+			i += S.charAt(S.length()-1-j) == '1' ? term : 0;
+			term *= 2;
+		}
+		return i;
+	}
+	
+	public byte toByte() {
+		return (byte) this.toInt(8);
+	}
+	
+	public short toShort() {
+		return (short) this.toInt(16);
+	}
+	
+	public int toInt() {
+		return this.toInt(32);
 	}
 	
 	@Override

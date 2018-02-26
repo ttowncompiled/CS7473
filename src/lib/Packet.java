@@ -3,9 +3,9 @@ package lib;
 public abstract class Packet implements Showable {
 
 	private Header header;
-	private String data;
+	private BitString data;
 	
-	public Packet(Header header, String data) {
+	public Packet(Header header, BitString data) {
 		this.header = header;
 		this.data = data;
 	}
@@ -14,7 +14,7 @@ public abstract class Packet implements Showable {
 		return this.header;
 	}
 	
-	public String getData() {
+	public BitString getData() {
 		return this.data;
 	}
 	
