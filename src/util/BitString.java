@@ -94,7 +94,7 @@ public class BitString implements Showable {
 	}
 	
 	public BitString substring(int j, int k) {
-		return new BitString(this.S.substring(j, k), this.spaced);
+		return new BitString(this.S.substring(j, Math.min(this.S.length(), k)), this.spaced);
 	}
 	
 	public BitString spaced() {

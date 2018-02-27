@@ -4,6 +4,9 @@ import util.*;
 
 public class IPHeader extends Header {
 	
+	public static final int MAX_BITS = 480;
+	public static final int MAX_HEX = IPHeader.MAX_BITS/4;
+	
 	private byte version;
 	private byte IPHeaderLength;
 	private byte typeOfService;
@@ -16,7 +19,7 @@ public class IPHeader extends Header {
 	private short checksum;
 	private int sourceIPAddress;
 	private int destinationIPAddress;
-	private int optionsPadding;
+	private int[] optionsPadding;
 	
 	public static IPHeader parse(BitString packet) {
 		byte version = packet.substring(0, 4).toByte();
@@ -31,11 +34,17 @@ public class IPHeader extends Header {
 		short checksum = packet.substring(80, 96).toShort();
 		int source = packet.substring(96, 128).toInt();
 		int dest = packet.substring(128, 160).toInt();
-		int optionsPadding = IHL == 6 ? packet.substring(160, 192).toInt() : 0;
-		return new IPHeader(version, IHL, typeOfService, totalLength, identification, flags, fragOffset, timeToLive, protocol, checksum, source, dest, optionsPadding);
+		int[] options = null;
+		if (IHL > 5) {
+			options = new int[IHL-5];
+			for (int i = 0; i < IHL-5; i++) {
+				options[i] = packet.substring(160+32*i, 192+32*i).toInt();
+			}
+		}
+		return new IPHeader(version, IHL, typeOfService, totalLength, identification, flags, fragOffset, timeToLive, protocol, checksum, source, dest, options);
 	}
 
-	public IPHeader(byte version, byte IHL, byte typeOfService, short totalLength, short identification, boolean[] flags, short fragOffset, byte timeToLive, byte protocol, short checksum, int source, int dest, int optionsPadding) {
+	public IPHeader(byte version, byte IHL, byte typeOfService, short totalLength, short identification, boolean[] flags, short fragOffset, byte timeToLive, byte protocol, short checksum, int source, int dest, int[] optionsPadding) {
 		super(Config.IP);
 		this.version = version;
 		this.IPHeaderLength = IHL;
@@ -100,7 +109,7 @@ public class IPHeader extends Header {
 		return this.destinationIPAddress;
 	}
 	
-	public int getOptionsPadding() {
+	public int[] getOptionsPadding() {
 		return this.optionsPadding;
 	}
 	
@@ -158,7 +167,16 @@ public class IPHeader extends Header {
 		rep.append(IPHeader.separator());
 		rep.append("|").append(BitString.fromInt(this.destinationIPAddress).spaced()).append("|\n");
 		rep.append(IPHeader.separator());
-		rep.append("|").append(BitString.fromInt(this.optionsPadding).spaced()).append("|\n");
+		rep.append("|");
+		if (this.optionsPadding == null || this.optionsPadding.length == 0) {
+			rep.append(BitString.fromInt(0).spaced()).append("|\n");
+		} else {
+			rep.append(BitString.fromInt(this.optionsPadding[1]).spaced()).append("\n");
+			for (int i = 1; i < this.optionsPadding.length-1; i++) {
+				rep.append(" ").append(BitString.fromInt(this.optionsPadding[i]).spaced()).append("\n");
+			}
+			rep.append(" ").append(BitString.fromInt(this.optionsPadding[this.optionsPadding.length-1]).spaced()).append("|\n");
+		}
 		rep.append(IPHeader.separator());
 		
 		return rep.toString();

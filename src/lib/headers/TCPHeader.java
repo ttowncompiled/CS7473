@@ -5,6 +5,9 @@ import util.Config;
 
 public class TCPHeader extends Header {
 	
+	public static final int MAX_BITS = 480;
+	public static final int MAX_HEX = TCPHeader.MAX_BITS/4;
+	
 	private short sourcePortAddress;
 	private short destinationPortAddress;
 	private int sequenceNumber;

@@ -18,6 +18,6 @@ public class DataPacket extends Packet {
 	
 	@Override
 	public String toString() {
-		return this.data.toString();
+		return new StringBuilder().append(this.data).append("\n").toString();
 	}
 }

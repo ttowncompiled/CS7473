@@ -3,6 +3,9 @@ package lib.headers;
 import util.*;
 
 public class EthernetHeader extends Header {
+	
+	public static final int MAX_BITS = 112;
+	public static final int MAX_HEX = EthernetHeader.MAX_BITS/4;
 
 	private long destinationMACAddress;
 	private long sourceMACAddress;

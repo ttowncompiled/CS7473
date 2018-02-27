@@ -18,7 +18,18 @@ public class HexString implements Showable {
 	}
 	
 	public HexString substring(int j, int k) {
-		return new HexString(this.S.substring(2*j, 2*k), this.spaced);
+		return new HexString(this.S.substring(j, Math.min(this.S.length(), k)), this.spaced);
+	}
+	
+	public HexString substring(int n) {
+		return this.substring(0, n);
+	}
+	
+	public HexString remove(int n) {
+		if (n >= this.S.length()) {
+			return new HexString("", this.spaced);
+		}
+		return this.substring(n, this.S.length());
 	}
 	
 	public HexString spaced() {
