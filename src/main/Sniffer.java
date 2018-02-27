@@ -1,18 +1,14 @@
 package main;
 
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 
 import org.apache.commons.cli.ParseException;
 
 import lib.headers.ARPHeader;
 import lib.headers.EthernetHeader;
+import lib.headers.Header;
 import lib.headers.ICMPHeader;
 import lib.headers.IPHeader;
 import lib.headers.TCPHeader;
@@ -26,37 +22,26 @@ public class Sniffer {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
 		CommandCLI cli = new CommandCLI(Sniffer.NAME, args);
-		Logger logger = Sniffer.configureLogger(cli);
 		if (cli.hasHelp()) {
 			Sniffer.help(cli);
 		} else if (cli.hasInput()) {
-			Sniffer.sniffFile(cli, logger);
+			Sniffer.sniffFile(cli);
 		} else {
 			Sniffer.sniffNetwork(cli);
 		}
-	}
-	
-	private static Logger configureLogger(CommandCLI cli) throws IOException {
-		Logger logger = Logger.getLogger(Sniffer.class.getName());
-		logger.setLevel(Level.FINER);
-		if (cli.hasOutput()) {
-			FileHandler handler = new FileHandler(cli.getOutput());
-			handler.setFormatter(new SimpleFormatter());
-			logger.addHandler(handler);
-		} else {
-			Handler handler = new StreamHandler(System.out, new SimpleFormatter());
-			handler.setLevel(Level.FINER);
-			logger.addHandler(handler);
-		}
-		return logger;
 	}
 	
 	private static void help(CommandCLI cli) {
 		cli.help();
 	}
 	
-	private static void sniffFile(CommandCLI cli, Logger logger) throws FileNotFoundException {
+	private static void sniffFile(CommandCLI cli) throws FileNotFoundException, IOException {
 		HexString[] hexes = HexFile.parse(cli.getInput());
+		if (cli.hasOutput()) {
+			FileWriter writer = new FileWriter(cli.getOutput(), false);
+			writer.append("");
+			writer.close();
+		}
 		for (int i = 0; i < hexes.length && (! cli.hasCount() || i < cli.getCount()); i++) {
 			HexString hex = hexes[i];
 			Packet p = null;
@@ -67,13 +52,13 @@ public class Sniffer {
 				continue;
 			}
 			if (cli.hasHeaderInfo() && ! cli.hasType()) {
-				Sniffer.sniffHeaderInfo(p, cli, logger);
+				Sniffer.sniffHeaderInfo(p, cli);
 			}
 			if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
-				Sniffer.sniffHeaderInfo(p, cli.getType(), cli, logger);
+				Sniffer.sniffHeaderInfo(p, cli.getType(), cli);
 			}
 			if (! cli.hasHeaderInfo()) {
-				Sniffer.log(logger, p.toString(), cli.hasOutput());
+				Sniffer.log(cli, p);
 			}
 		}
 	}
@@ -156,19 +141,16 @@ public class Sniffer {
 		return Packet.build(hex, header);
 	}
 	
-	private static void sniffHeaderInfo(Packet p, CommandCLI cli, Logger logger) {
-		while (p != null) {
-			Sniffer.log(logger, p.getHeader().toString(), cli.hasOutput());
-			p = p.getNext();
-		}
+	private static void sniffHeaderInfo(Packet p, CommandCLI cli) throws IOException {
+		Sniffer.log(cli,  p, true);
 	}
 	
-	private static void sniffHeaderInfo(Packet p, String type, CommandCLI cli, Logger logger) {
+	private static void sniffHeaderInfo(Packet p, String type, CommandCLI cli) throws IOException {
 		while (p != null && ! p.getType().equals(type)) {
 			p = p.getNext();
 		}
 		if (p != null) {
-			Sniffer.log(logger, p.getHeader().toString(), cli.hasOutput());
+			Sniffer.log(cli, p.getHeader());
 		}
 	}
 	
@@ -195,11 +177,54 @@ public class Sniffer {
 		return etherType == Config.ETH_ARP_ETHERTYPE || etherType == Config.ETH_IP_ETHERTYPE;
 	}
 	
-	private static void log(Logger logger, String m, boolean hex) {
-		if (hex) {
-			
+	private static String formatHexString(HexString hex) {
+		StringBuilder rep = new StringBuilder();
+		for (int i = 0; i < hex.length(); i += 32) {
+			rep.append(hex.substring(i, i+32).spaced().toString()).append("\n");
+		}
+		return rep.append("\n").toString();
+	}
+	
+	private static void log(CommandCLI cli, Packet p) throws IOException {
+		Sniffer.log(cli, p, false);
+	}
+	
+	private static void log(CommandCLI cli, Packet p, boolean headerOnly) throws IOException {
+		if (headerOnly) {
+			if (cli.hasOutput()) {
+				HexString hex = p.getHeader().toHexString();
+				p = p.getNext();
+				while (p != null) {
+					hex = hex.concat(p.getHeader().toHexString());
+					p = p.getNext();
+				}
+				FileWriter writer = new FileWriter(cli.getOutput(), true);
+				writer.append(Sniffer.formatHexString(hex));
+				writer.close();
+			} else {
+				while (p != null) {
+					System.out.println(p.getHeader());
+					p = p.getNext();
+				}
+			}
 		} else {
-			logger.fine("\n" + m);
+			if (cli.hasOutput()) {
+				FileWriter writer = new FileWriter(cli.getOutput(), true);
+				writer.append(Sniffer.formatHexString(p.toHexString()));
+				writer.close();
+			} else {
+				System.out.println(p);
+			}
+		}
+	}
+	
+	private static void log(CommandCLI cli, Header h) throws IOException {
+		if (cli.hasOutput()) {
+			FileWriter writer = new FileWriter(cli.getOutput(), true);
+			writer.append(Sniffer.formatHexString(h.toHexString()));
+			writer.close();
+		} else {
+			System.out.println(h);
 		}
 	}
 }

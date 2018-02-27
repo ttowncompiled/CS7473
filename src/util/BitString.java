@@ -142,9 +142,9 @@ public class BitString implements Showable {
 	
 	private long toLong(int n) {
 		long i = 0;
-		int term = 1;
+		long term = 1;
 		for (int j = 0; j < this.S.length() && j < n; j++) {
-			i += S.charAt(S.length()-1-j) == '1' ? term : 0;
+			i += this.S.charAt(this.S.length()-1-j) == '1' ? term : 0;
 			term *= 2;
 		}
 		return i;
