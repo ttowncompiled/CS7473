@@ -1,6 +1,13 @@
 package main;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 import org.apache.commons.cli.ParseException;
 
@@ -16,23 +23,38 @@ public class Sniffer {
 	
 	public static final String NAME = "Sniffer";
 
-	public static void main(String[] args) throws FileNotFoundException, ParseException {
+	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
 		CommandCLI cli = new CommandCLI(Sniffer.NAME, args);
-		
+		Logger logger = Sniffer.configureLogger(cli);
 		if (cli.hasHelp()) {
 			Sniffer.help(cli);
 		} else if (cli.hasInput()) {
-			Sniffer.sniffFile(cli);
+			Sniffer.sniffFile(cli, logger);
 		} else {
 			Sniffer.sniffNetwork(cli);
 		}
+	}
+	
+	private static Logger configureLogger(CommandCLI cli) throws IOException {
+		Logger logger = Logger.getLogger(Sniffer.class.getName());
+		logger.setLevel(Level.FINER);
+		if (cli.hasOutput()) {
+			FileHandler handler = new FileHandler(cli.getOutput());
+			handler.setFormatter(new SimpleFormatter());
+			logger.addHandler(handler);
+		} else {
+			Handler handler = new StreamHandler(System.out, new SimpleFormatter());
+			handler.setLevel(Level.FINER);
+			logger.addHandler(handler);
+		}
+		return logger;
 	}
 	
 	private static void help(CommandCLI cli) {
 		cli.help();
 	}
 	
-	private static void sniffFile(CommandCLI cli) throws FileNotFoundException {
+	private static void sniffFile(CommandCLI cli, Logger logger) throws FileNotFoundException {
 		HexString[] hexes = HexFile.parse(cli.getInput());
 		for (int i = 0; i < hexes.length && (! cli.hasCount() || i < cli.getCount()); i++) {
 			HexString hex = hexes[i];
@@ -44,10 +66,13 @@ public class Sniffer {
 				continue;
 			}
 			if (cli.hasHeaderInfo() && ! cli.hasType()) {
-				Sniffer.sniffHeaderInfo(p);
+				Sniffer.sniffHeaderInfo(p, logger);
 			}
 			if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
-				Sniffer.sniffHeaderInfo(p, cli.getType());
+				Sniffer.sniffHeaderInfo(p, cli.getType(), logger);
+			}
+			if (! cli.hasHeaderInfo()) {
+				Sniffer.log(logger, p.toString());
 			}
 		}
 	}
@@ -118,19 +143,19 @@ public class Sniffer {
 		return Packet.build(hex, header);
 	}
 	
-	private static void sniffHeaderInfo(Packet p) {
+	private static void sniffHeaderInfo(Packet p, Logger logger) {
 		while (p != null) {
-			p.getHeader().show();
+			Sniffer.log(logger, p.getHeader().toString());
 			p = p.getNext();
 		}
 	}
 	
-	private static void sniffHeaderInfo(Packet p, String type) {
+	private static void sniffHeaderInfo(Packet p, String type, Logger logger) {
 		while (p != null && ! p.getType().equals(type)) {
 			p = p.getNext();
 		}
 		if (p != null) {
-			p.getHeader().show();
+			Sniffer.log(logger, p.getHeader().toString());
 		}
 	}
 	
@@ -164,5 +189,9 @@ public class Sniffer {
 	
 	private static boolean isIPProtocol(int protocol) {
 		return protocol == Config.IP_ICMP_PROTOCOL || protocol == Config.IP_TCP_PROTOCOL || protocol == Config.IP_UDP_PROTOCOL;
+	}
+	
+	private static void log(Logger logger, String m) {
+		logger.fine("\n" + m);
 	}
 }

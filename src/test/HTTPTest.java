@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import lib.headers.EthernetHeader;
 import lib.headers.IPHeader;
 import lib.headers.TCPHeader;
-import lib.packets.DataPacket;
 import lib.packets.Packet;
 import util.*;
 
