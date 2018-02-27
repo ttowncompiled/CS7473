@@ -30,39 +30,32 @@ public class DataPacket extends Packet {
 	
 	@Override
 	public String toString() {
-		String S = this.data.toString();
+		String S = this.data.spaced().toString();
 		StringBuilder rep = new StringBuilder();
 		rep.append("|");
 		for (int i = 0; i < 63 && i < S.length(); i++) {
-			if (i % 2 == 0) {
-				rep.append(S.charAt(i/2));
-			} else {
-				rep.append(" ");
-			}
+			rep.append(S.charAt(i));
 		}
-		if (S.length() > 32) {
-			for (int k = 1; k <= S.length()/32-1; k++) {
+		if (S.length() > 63) {
+			for (int k = 1; k <= S.length()/63-1; k++) {
 				rep.append("\n ");
 				for (int i = 0; i < 63; i++) {
-					if (i % 2 == 0) {
-						rep.append(S.charAt(32*k+i/2));
-					} else {
-						rep.append(" ");
-					}
+					rep.append(S.charAt(63*k + i));
 				}
 			}
 		}
-		if (S.length() % 32 > 0) {
+		if (S.length() % 63 > 0) {
 			rep.append("\n ");
-			int offset = S.length() - (S.length() % 32);
+			int offset = S.length() - (S.length() % 63);
 			for (int i = 0; i < 63; i++) {
-				if (i % 2 == 1) {
+				if (offset + i < S.length()) {
+					rep.append(S.charAt(offset + i));
+				} else if ((i+1) % 3 == 0) {
 					rep.append(" ");
-				} else if (i % 2 == 0 && offset + i/2 < S.length()) {
-					rep.append(S.charAt(offset+i/2));
 				} else {
 					rep.append("x");
 				}
+				
 			}
 		}
 		rep.append("|\n");
