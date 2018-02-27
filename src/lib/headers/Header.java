@@ -14,6 +14,10 @@ public abstract class Header implements Showable {
 		return this.type;
 	}
 	
+	public abstract int getHeaderBitLength();
+	
+	public abstract int getHeaderHexLength();
+	
 	@Override
 	public abstract String toString();
 	

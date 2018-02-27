@@ -4,6 +4,9 @@ import util.BitString;
 import util.Config;
 
 public class ARPHeader extends Header {
+	
+	public static final int MAX_BITS = 224;
+	public static final int MAX_HEX = ARPHeader.MAX_BITS/4;
 
 	private short hardwareType;
 	private short protocolType;
@@ -75,6 +78,14 @@ public class ARPHeader extends Header {
 	
 	public int getTargetProtocolAddress() {
 		return this.targetProtocolAddress;
+	}
+	
+	public int getHeaderBitLength() {
+		return ARPHeader.MAX_BITS;
+	}
+	
+	public int getHeaderHexLength() {
+		return ARPHeader.MAX_HEX;
 	}
 	
 	private static String bitIndices() {

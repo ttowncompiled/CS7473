@@ -4,6 +4,9 @@ import util.BitString;
 import util.Config;
 
 public class UDPHeader extends Header {
+	
+	public static final int MAX_BITS = 64;
+	public static final int MAX_HEX = UDPHeader.MAX_BITS/4;
 
 	private short sourcePortAddress;
 	private short destinationPortAddress;
@@ -40,6 +43,14 @@ public class UDPHeader extends Header {
 	
 	public short getChecksum() {
 		return this.checksum;
+	}
+	
+	public int getHeaderBitLength() {
+		return UDPHeader.MAX_BITS;
+	}
+	
+	public int getHeaderHexLength() {
+		return UDPHeader.MAX_HEX;
 	}
 	
 	private static String bitIndices() {

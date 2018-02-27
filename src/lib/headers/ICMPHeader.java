@@ -4,6 +4,9 @@ import util.BitString;
 import util.Config;
 
 public class ICMPHeader extends Header {
+	
+	public static final int MAX_BITS = 32;
+	public static final int MAX_HEX = ICMPHeader.MAX_BITS/4;
 
 	private byte ICMPType;
 	private byte code;
@@ -33,6 +36,14 @@ public class ICMPHeader extends Header {
 	
 	public short getChecksum() {
 		return this.checksum;
+	}
+	
+	public int getHeaderBitLength() {
+		return ICMPHeader.MAX_BITS;
+	}
+	
+	public int getHeaderHexLength() {
+		return ICMPHeader.MAX_HEX;
 	}
 	
 	private static String bitIndices() {

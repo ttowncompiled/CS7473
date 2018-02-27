@@ -113,6 +113,14 @@ public class IPHeader extends Header {
 		return this.optionsPadding;
 	}
 	
+	public int getHeaderBitLength() {
+		return 32*this.IPHeaderLength;
+	}
+	
+	public int getHeaderHexLength() {
+		return 8*this.IPHeaderLength;
+	}
+	
 	private static String bitIndices() {
 		StringBuilder rep = new StringBuilder();
 		

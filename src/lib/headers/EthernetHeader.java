@@ -37,6 +37,14 @@ public class EthernetHeader extends Header {
 		return this.etherType;
 	}
 	
+	public int getHeaderBitLength() {
+		return EthernetHeader.MAX_BITS;
+	}
+	
+	public int getHeaderHexLength() {
+		return EthernetHeader.MAX_HEX;
+	}
+	
 	private static String bitIndices() {
 		StringBuilder rep = new StringBuilder();
 		

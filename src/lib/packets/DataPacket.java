@@ -43,19 +43,27 @@ public class DataPacket extends Packet {
 					rep.append(S.charAt(63*k + i));
 				}
 			}
-		}
-		if (S.length() % 63 > 0) {
-			rep.append("\n ");
-			int offset = S.length() - (S.length() % 63);
-			for (int i = 0; i < 63; i++) {
-				if (offset + i < S.length()) {
-					rep.append(S.charAt(offset + i));
-				} else if ((i+1) % 3 == 0) {
+			if (S.length() % 63 > 0) {
+				rep.append("\n ");
+				int offset = S.length() - (S.length() % 63);
+				for (int i = 0; i < 63; i++) {
+					if (offset + i < S.length()) {
+						rep.append(S.charAt(offset + i));
+					} else if ((i+1) % 3 == 0) {
+						rep.append(" ");
+					} else {
+						rep.append("x");
+					}
+					
+				}
+			}
+		} else if (S.length() % 63 > 0) {
+			for (int i = S.length(); i < 63; i++) {
+				if ((i+1) % 3 == 0) {
 					rep.append(" ");
 				} else {
 					rep.append("x");
 				}
-				
 			}
 		}
 		rep.append("|\n");

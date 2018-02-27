@@ -100,6 +100,14 @@ public class TCPHeader extends Header {
 		return this.optionsPadding;
 	}
 	
+	public int getHeaderBitLength() {
+		return 32*this.dataOffset;
+	}
+	
+	public int getHeaderHexLength() {
+		return 8*this.dataOffset;
+	}
+	
 	private static String bitIndices() {
 		StringBuilder rep = new StringBuilder();
 		

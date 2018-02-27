@@ -5,12 +5,13 @@ import java.io.FileNotFoundException;
 import lib.headers.EthernetHeader;
 import lib.headers.IPHeader;
 import lib.headers.TCPHeader;
-import lib.packets.DataPacket;
 import lib.packets.Packet;
-import util.*;
+import util.Config;
+import util.HexFile;
+import util.HexString;
 
-public class HTTPTest {
-	
+public class TelnetTest {
+
 	public static void main(String[] args) throws FileNotFoundException {
 		HexString[] hexStrings = HexFile.parse(Config.HTTP_PATH);
 		for (int i = 0; i < hexStrings.length; i++) {

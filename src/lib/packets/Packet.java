@@ -1,12 +1,23 @@
 package lib.packets;
 
 import lib.headers.Header;
+import util.HexString;
 import lib.Showable;
 
 public class Packet implements Showable {
 
 	private Header header;
 	private Packet next;
+	
+	public static Packet build(HexString data, Header... headers) {
+		Packet p = ! data.isEmpty() ? new DataPacket(data) : null;
+		if (headers.length > 0) {
+			for (int i = headers.length-1; i >= 0; i--) {
+				p = new Packet(headers[i], p);
+			}
+		}
+		return p; 
+	}
 	
 	public Packet(Header header, Packet next) {
 		this.header = header;
