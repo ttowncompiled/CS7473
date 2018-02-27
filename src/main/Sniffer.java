@@ -85,12 +85,24 @@ public class Sniffer {
 	private static Packet processTCPPacket(CommandCLI cli, HexString hex) {
 		TCPHeader header = TCPHeader.parse(hex.substring(TCPHeader.MAX_HEX).toBitString());
 		hex = hex.remove(header.getHeaderHexLength());
+		if (cli.hasSourcePort() && ! (cli.getSourcePortStart() <= header.getSourcePortAddress() && header.getSourcePortAddress() <= cli.getSourcePortEnd())) {
+			return null;
+		}
+		if (cli.hasDestPort() && ! (cli.getDestPortStart() <= header.getDestinationPortAddress() && header.getDestinationPortAddress() <= cli.getDestPortEnd()) ) {
+			return null;
+		}
 		return Packet.build(hex, header);
 	}
 	
 	private static Packet processUDPPacket(CommandCLI cli, HexString hex) {
 		UDPHeader header = UDPHeader.parse(hex.substring(UDPHeader.MAX_HEX).toBitString());
 		hex = hex.remove(header.getHeaderHexLength());
+		if (cli.hasSourcePort() && ! (cli.getSourcePortStart() <= header.getSourcePortAddress() && header.getSourcePortAddress() <= cli.getSourcePortEnd())) {
+			return null;
+		}
+		if (cli.hasDestPort() && ! (cli.getDestPortStart() <= header.getDestinationPortAddress() && header.getDestinationPortAddress() <= cli.getDestPortEnd()) ) {
+			return null;
+		}
 		return Packet.build(hex, header);
 	}
 	

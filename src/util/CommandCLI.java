@@ -122,36 +122,52 @@ public class CommandCLI {
 		return this.cmd.hasOption(CommandCLI.SPORT);
 	}
 	
-	public int[] getSourcePort() {
+	public int getSourcePortStart() {
 		String[] sports = this.cmd.getOptionValues(CommandCLI.SPORT);
 		if (sports.length != 2) {
-			return null;
+			return -1;
 		}
-		if (! StringUtils.isAlphanumeric(sports[0]) || ! StringUtils.isAlphanumeric(sports[1])) {
-			return null;
+		if (! StringUtils.isAlphanumeric(sports[0])) {
+			return -1;
 		}
-		int[] ports = new int[2];
-		ports[0] = Integer.parseInt(sports[0]);
-		ports[1] = Integer.parseInt(sports[1]);
-		return ports;
+		return Integer.parseInt(sports[0]);
+	}
+	
+	public int getSourcePortEnd() {
+		String[] sports = this.cmd.getOptionValues(CommandCLI.SPORT);
+		if (sports.length != 2) {
+			return -1;
+		}
+		if (! StringUtils.isAlphanumeric(sports[1])) {
+			return -1;
+		}
+		return Integer.parseInt(sports[1]);
 	}
 	
 	public boolean hasDestPort() {
 		return this.cmd.hasOption(CommandCLI.DPORT);
 	}
 	
-	public int[] getDestPort() {
+	public int getDestPortStart() {
 		String[] dports = this.cmd.getOptionValues(CommandCLI.DPORT);
 		if (dports.length != 2) {
-			return null;
+			return -1;
 		}
-		if (! StringUtils.isAlphanumeric(dports[0]) || ! StringUtils.isAlphanumeric(dports[1])) {
-			return null;
+		if (! StringUtils.isAlphanumeric(dports[0])) {
+			return -1;
 		}
-		int[] ports = new int[2];
-		ports[0] = Integer.parseInt(dports[0]);
-		ports[1] = Integer.parseInt(dports[1]);
-		return ports;
+		return Integer.parseInt(dports[0]);
+	}
+	
+	public int getDestPortEnd() {
+		String[] dports = this.cmd.getOptionValues(CommandCLI.DPORT);
+		if (dports.length != 2) {
+			return -1;
+		}
+		if (! StringUtils.isAlphanumeric(dports[1])) {
+			return -1;
+		}
+		return Integer.parseInt(dports[1]);
 	}
 	
 	public boolean hasHelp() {
