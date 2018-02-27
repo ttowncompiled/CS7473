@@ -67,13 +67,13 @@ public class Sniffer {
 				continue;
 			}
 			if (cli.hasHeaderInfo() && ! cli.hasType()) {
-				Sniffer.sniffHeaderInfo(p, logger);
+				Sniffer.sniffHeaderInfo(p, cli, logger);
 			}
 			if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
-				Sniffer.sniffHeaderInfo(p, cli.getType(), logger);
+				Sniffer.sniffHeaderInfo(p, cli.getType(), cli, logger);
 			}
 			if (! cli.hasHeaderInfo()) {
-				Sniffer.log(logger, p.toString());
+				Sniffer.log(logger, p.toString(), cli.hasOutput());
 			}
 		}
 	}
@@ -156,19 +156,19 @@ public class Sniffer {
 		return Packet.build(hex, header);
 	}
 	
-	private static void sniffHeaderInfo(Packet p, Logger logger) {
+	private static void sniffHeaderInfo(Packet p, CommandCLI cli, Logger logger) {
 		while (p != null) {
-			Sniffer.log(logger, p.getHeader().toString());
+			Sniffer.log(logger, p.getHeader().toString(), cli.hasOutput());
 			p = p.getNext();
 		}
 	}
 	
-	private static void sniffHeaderInfo(Packet p, String type, Logger logger) {
+	private static void sniffHeaderInfo(Packet p, String type, CommandCLI cli, Logger logger) {
 		while (p != null && ! p.getType().equals(type)) {
 			p = p.getNext();
 		}
 		if (p != null) {
-			Sniffer.log(logger, p.getHeader().toString());
+			Sniffer.log(logger, p.getHeader().toString(), cli.hasOutput());
 		}
 	}
 	
@@ -195,7 +195,11 @@ public class Sniffer {
 		return etherType == Config.ETH_ARP_ETHERTYPE || etherType == Config.ETH_IP_ETHERTYPE;
 	}
 	
-	private static void log(Logger logger, String m) {
-		logger.fine("\n" + m);
+	private static void log(Logger logger, String m, boolean hex) {
+		if (hex) {
+			
+		} else {
+			logger.fine("\n" + m);
+		}
 	}
 }
