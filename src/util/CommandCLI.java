@@ -74,7 +74,8 @@ public class CommandCLI {
 	}
 	
 	public boolean hasValidType() {
-		return false;
+		String t = this.cmd.getOptionValue(CommandCLI.TYPE);
+		return t.equals(Config.ARP) || t.equals(Config.ETHERNET) || t.equals(Config.ICMP) || t.equals(Config.IP) || t.equals(Config.TCP) || t.equals(Config.UDP);
 	}
 	
 	public String getType() {
