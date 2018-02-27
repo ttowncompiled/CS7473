@@ -36,42 +36,34 @@ public class Sniffer {
 		HexString[] hexes = HexFile.parse(cli.getInput());
 		for (int i = 0; i < hexes.length && (! cli.hasCount() || i < cli.getCount()); i++) {
 			HexString hex = hexes[i];
-			if (Sniffer.isEthernetPacket(hex)) {
+			if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
 				Packet p = Sniffer.processEthernetPacket(cli, hex);
-				p.show();
+				if (p != null) {
+					p.show();
+				}
 			}
 		}
-	}
-	
-	private static boolean isEthernetPacket(HexString hex) {
-		EthernetHeader header = EthernetHeader.parse(hex.substring(EthernetHeader.MAX_HEX).toBitString());
-		return header.getEtherType() == Config.ETH_ARP_ETHERTYPE || header.getEtherType() == Config.ETH_IP_ETHERTYPE;
 	}
 	
 	private static Packet processEthernetPacket(CommandCLI cli, HexString hex) {
 		EthernetHeader header = EthernetHeader.parse(hex.substring(EthernetHeader.MAX_HEX).toBitString());
 		hex = hex.remove(header.getHeaderHexLength());
 		Packet p = null;
-		if (Sniffer.isIPPacket(hex)) {
+		if (Sniffer.isIPPacket(hex) && (! cli.hasType() || Sniffer.isIPType(cli.getType()))) {
 			p = Sniffer.processIPPacket(cli, hex);
 		}
 		return p != null ? new Packet(header, p) : null;
-	}
-	
-	private static boolean isIPPacket(HexString hex) {
-		IPHeader header = IPHeader.parse(hex.substring(IPHeader.MAX_HEX).toBitString());
-		return header.getVersion() == 4 && (header.getProtocol() == Config.IP_ICMP_PROTOCOL || header.getProtocol() == Config.IP_TCP_PROTOCOL || header.getProtocol() == Config.IP_UDP_PROTOCOL);
 	}
 	
 	private static Packet processIPPacket(CommandCLI cli, HexString hex) {
 		IPHeader header = IPHeader.parse(hex.substring(IPHeader.MAX_HEX).toBitString());
 		hex = hex.remove(header.getHeaderHexLength());
 		Packet p = null;
-		if (header.getProtocol() == Config.IP_ICMP_PROTOCOL) {
+		if (header.getProtocol() == Config.IP_ICMP_PROTOCOL && (! cli.hasType() || cli.getType().equals(Config.ICMP))) {
 			p = Sniffer.processICMPPacket(cli, hex);
-		} else if (header.getProtocol() == Config.IP_TCP_PROTOCOL) {
+		} else if (header.getProtocol() == Config.IP_TCP_PROTOCOL && (! cli.hasType() || cli.getType().equals(Config.TCP))) {
 			p = Sniffer.processTCPPacket(cli, hex);
-		} else if (header.getProtocol() == Config.IP_UDP_PROTOCOL) {
+		} else if (header.getProtocol() == Config.IP_UDP_PROTOCOL && (! cli.hasType() || cli.getType().equals(Config.UDP))) {
 			p = Sniffer.processUDPPacket(cli, hex);
 		}
 		return p != null ? new Packet(header, p) : null;
@@ -97,5 +89,27 @@ public class Sniffer {
 	
 	private static void sniffNetwork(CommandCLI cli) {
 		
+	}
+	
+	private static boolean isEthernetPacket(HexString hex) {
+		EthernetHeader header = EthernetHeader.parse(hex.substring(EthernetHeader.MAX_HEX).toBitString());
+		return Sniffer.isEthernetEtherType(header.getEtherType());
+	}
+	
+	private static boolean isIPPacket(HexString hex) {
+		IPHeader header = IPHeader.parse(hex.substring(IPHeader.MAX_HEX).toBitString());
+		return header.getVersion() == 4 && Sniffer.isIPProtocol(header.getProtocol());
+	}
+	
+	private static boolean isEthernetEtherType(int etherType) {
+		return etherType == Config.ETH_ARP_ETHERTYPE || etherType == Config.ETH_IP_ETHERTYPE;
+	}
+	
+	private static boolean isIPProtocol(int protocol) {
+		return protocol == Config.IP_ICMP_PROTOCOL || protocol == Config.IP_TCP_PROTOCOL || protocol == Config.IP_UDP_PROTOCOL;
+	}
+	
+	private static boolean isIPType(String type) {
+		return type.equals(Config.IP) || type.equals(Config.ICMP) || type.equals(Config.TCP) || type.equals(Config.UDP);
 	}
 }
