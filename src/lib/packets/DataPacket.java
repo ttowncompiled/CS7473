@@ -16,6 +16,11 @@ public class DataPacket extends Packet {
 		return this.data;
 	}
 	
+	@Override
+	public HexString toHexString() {
+		return this.data;
+	}
+	
 	private static String separator() {
 		StringBuilder rep = new StringBuilder();
 		

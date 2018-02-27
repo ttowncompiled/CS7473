@@ -89,6 +89,19 @@ public class ARPHeader extends Header {
 		return ARPHeader.MAX_HEX;
 	}
 	
+	public HexString toHexString() {
+		return BitString.fromShort(this.hardwareType)
+				 		.concat(BitString.fromShort(this.protocolType))
+				 		.concat(BitString.fromByte(this.hardwareAddressLength))
+				 		.concat(BitString.fromByte(this.protocolAddressLength))
+				 		.concat(BitString.fromShort(this.operation))
+				 		.concat(BitString.fromLong(this.senderHardwareAddress, 48))
+				 		.concat(BitString.fromInt(this.senderProtocolAddress))
+				 		.concat(BitString.fromLong(this.targetHardwareAddress, 48))
+				 		.concat(BitString.fromInt(this.targetProtocolAddress))
+				 		.toHexString();
+	}
+	
 	private static String bitIndices() {
 		StringBuilder rep = new StringBuilder();
 		
@@ -125,19 +138,6 @@ public class ARPHeader extends Header {
 		rep.append("+");
 		
 		return rep.toString();
-	}
-	
-	public HexString toHexString() {
-		return BitString.fromShort(this.hardwareType)
-				 		.concat(BitString.fromShort(this.protocolType))
-				 		.concat(BitString.fromByte(this.hardwareAddressLength))
-				 		.concat(BitString.fromByte(this.protocolAddressLength))
-				 		.concat(BitString.fromShort(this.operation))
-				 		.concat(BitString.fromLong(this.senderHardwareAddress, 48))
-				 		.concat(BitString.fromInt(this.senderProtocolAddress))
-				 		.concat(BitString.fromLong(this.targetHardwareAddress, 48))
-				 		.concat(BitString.fromInt(this.targetProtocolAddress))
-				 		.toHexString();
 	}
 	
 	public String toString() {

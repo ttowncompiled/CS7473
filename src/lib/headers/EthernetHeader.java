@@ -47,6 +47,13 @@ public class EthernetHeader extends Header {
 		return EthernetHeader.MAX_HEX;
 	}
 	
+	public HexString toHexString() {
+		return BitString.fromLong(this.destinationMACAddress, 48)
+						.concat(BitString.fromLong(this.sourceMACAddress, 48))
+						.concat(BitString.fromShort(this.etherType))
+						.toHexString();
+	}
+	
 	private static String bitIndices() {
 		StringBuilder rep = new StringBuilder();
 		
@@ -83,13 +90,6 @@ public class EthernetHeader extends Header {
 		rep.append("+");
 		
 		return rep.toString();
-	}
-	
-	public HexString toHexString() {
-		return BitString.fromLong(this.destinationMACAddress, 48)
-						.concat(BitString.fromLong(this.sourceMACAddress, 48))
-						.concat(BitString.fromShort(this.etherType))
-						.toHexString();
 	}
 	
 	public String toString() {

@@ -47,6 +47,13 @@ public class ICMPHeader extends Header {
 		return ICMPHeader.MAX_HEX;
 	}
 	
+	public HexString toHexString() {
+		return BitString.fromByte(this.ICMPType)
+						.concat(BitString.fromByte(this.code))
+						.concat(BitString.fromShort(this.checksum))
+						.toHexString();
+	}
+	
 	private static String bitIndices() {
 		StringBuilder rep = new StringBuilder();
 		
@@ -83,13 +90,6 @@ public class ICMPHeader extends Header {
 		rep.append("+");
 		
 		return rep.toString();
-	}
-	
-	public HexString toHexString() {
-		return BitString.fromByte(this.ICMPType)
-						.concat(BitString.fromByte(this.code))
-						.concat(BitString.fromShort(this.checksum))
-						.toHexString();
 	}
 	
 	public String toString() {

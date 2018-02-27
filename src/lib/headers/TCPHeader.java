@@ -109,6 +109,25 @@ public class TCPHeader extends Header {
 		return 8*this.dataOffset;
 	}
 	
+	public HexString toHexString() {
+		BitString bits = BitString.fromShort(this.sourcePortAddress)
+								  .concat(BitString.fromShort(this.destinationPortAddress))
+								  .concat(BitString.fromInt(this.sequenceNumber))
+								  .concat(BitString.fromInt(this.acknowledgementNumber))
+								  .concat(BitString.fromByte(this.dataOffset, 4))
+								  .concat(BitString.fromByte(this.reserved, 3))
+								  .concat(BitString.fromBits(this.flags))
+								  .concat(BitString.fromShort(this.windowSize))
+								  .concat(BitString.fromShort(this.checksum))
+								  .concat(BitString.fromShort(this.urgentPointer));
+		if (this.optionsPadding != null && this.optionsPadding.length > 0) {
+			for (int i = 0; i < this.optionsPadding.length; i++) {
+				bits = bits.concat(BitString.fromInt(this.optionsPadding[i]));
+			}
+		}
+		return bits.toHexString();
+	}
+	
 	private static String bitIndices() {
 		StringBuilder rep = new StringBuilder();
 		
@@ -145,25 +164,6 @@ public class TCPHeader extends Header {
 		rep.append("+");
 		
 		return rep.toString();
-	}
-	
-	public HexString toHexString() {
-		BitString bits = BitString.fromShort(this.sourcePortAddress)
-								  .concat(BitString.fromShort(this.destinationPortAddress))
-								  .concat(BitString.fromInt(this.sequenceNumber))
-								  .concat(BitString.fromInt(this.acknowledgementNumber))
-								  .concat(BitString.fromByte(this.dataOffset, 4))
-								  .concat(BitString.fromByte(this.reserved, 3))
-								  .concat(BitString.fromBits(this.flags))
-								  .concat(BitString.fromShort(this.windowSize))
-								  .concat(BitString.fromShort(this.checksum))
-								  .concat(BitString.fromShort(this.urgentPointer));
-		if (this.optionsPadding != null && this.optionsPadding.length > 0) {
-			for (int i = 0; i < this.optionsPadding.length; i++) {
-				bits = bits.concat(BitString.fromInt(this.optionsPadding[i]));
-			}
-		}
-		return bits.toHexString();
 	}
 	
 	public String toString() {

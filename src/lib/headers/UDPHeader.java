@@ -54,6 +54,14 @@ public class UDPHeader extends Header {
 		return UDPHeader.MAX_HEX;
 	}
 	
+	public HexString toHexString() {
+		return BitString.fromShort(this.sourcePortAddress)
+						.concat(BitString.fromShort(this.destinationPortAddress))
+						.concat(BitString.fromShort(this.length))
+						.concat(BitString.fromShort(this.checksum))
+						.toHexString();
+	}
+	
 	private static String bitIndices() {
 		StringBuilder rep = new StringBuilder();
 		
@@ -90,14 +98,6 @@ public class UDPHeader extends Header {
 		rep.append("+");
 		
 		return rep.toString();
-	}
-	
-	public HexString toHexString() {
-		return BitString.fromShort(this.sourcePortAddress)
-						.concat(BitString.fromShort(this.destinationPortAddress))
-						.concat(BitString.fromShort(this.length))
-						.concat(BitString.fromShort(this.checksum))
-						.toHexString();
 	}
 	
 	public String toString() {

@@ -123,6 +123,27 @@ public class IPHeader extends Header {
 		return 8*this.IPHeaderLength;
 	}
 	
+	public HexString toHexString() {
+		BitString bits = BitString.fromByte(this.version, 4)
+								  .concat(BitString.fromByte(this.IPHeaderLength, 4))
+								  .concat(BitString.fromByte(this.typeOfService))
+								  .concat(BitString.fromShort(this.totalLength))
+								  .concat(BitString.fromShort(this.identification))
+								  .concat(BitString.fromBits(this.flags))
+								  .concat(BitString.fromShort(this.fragmentationOffset, 13))
+								  .concat(BitString.fromByte(this.timeToLive))
+								  .concat(BitString.fromByte(this.protocol))
+								  .concat(BitString.fromShort(this.checksum))
+								  .concat(BitString.fromInt(this.sourceIPAddress))
+								  .concat(BitString.fromInt(this.destinationIPAddress));
+		if (this.optionsPadding != null && this.optionsPadding.length > 0) {
+			for (int i = 0; i < this.optionsPadding.length; i++) {
+				bits = bits.concat(BitString.fromInt(this.optionsPadding[i]));
+			}
+		}
+		return bits.toHexString();
+	}
+	
 	private static String bitIndices() {
 		StringBuilder rep = new StringBuilder();
 		
@@ -159,27 +180,6 @@ public class IPHeader extends Header {
 		rep.append("+");
 		
 		return rep.toString();
-	}
-	
-	public HexString toHexString() {
-		BitString bits = BitString.fromByte(this.version, 4)
-								  .concat(BitString.fromByte(this.IPHeaderLength, 4))
-								  .concat(BitString.fromByte(this.typeOfService))
-								  .concat(BitString.fromShort(this.totalLength))
-								  .concat(BitString.fromShort(this.identification))
-								  .concat(BitString.fromBits(this.flags))
-								  .concat(BitString.fromShort(this.fragmentationOffset, 13))
-								  .concat(BitString.fromByte(this.timeToLive))
-								  .concat(BitString.fromByte(this.protocol))
-								  .concat(BitString.fromShort(this.checksum))
-								  .concat(BitString.fromInt(this.sourceIPAddress))
-								  .concat(BitString.fromInt(this.destinationIPAddress));
-		if (this.optionsPadding != null && this.optionsPadding.length > 0) {
-			for (int i = 0; i < this.optionsPadding.length; i++) {
-				bits = bits.concat(BitString.fromInt(this.optionsPadding[i]));
-			}
-		}
-		return bits.toHexString();
 	}
 	
 	public String toString() {

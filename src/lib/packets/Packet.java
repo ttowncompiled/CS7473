@@ -36,6 +36,13 @@ public class Packet implements Showable {
 		return this.header.getType();
 	}
 	
+	public HexString toHexString() {
+		if (this.next == null) {
+			return this.header.toHexString();
+		}
+		return this.header.toHexString().concat(this.next.toHexString());
+	}
+	
 	@Override
 	public String toString() {
 		if (this.next == null) {
