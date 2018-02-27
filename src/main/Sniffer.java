@@ -11,6 +11,7 @@ import java.util.logging.StreamHandler;
 
 import org.apache.commons.cli.ParseException;
 
+import lib.headers.ARPHeader;
 import lib.headers.EthernetHeader;
 import lib.headers.ICMPHeader;
 import lib.headers.IPHeader;
@@ -81,8 +82,10 @@ public class Sniffer {
 		EthernetHeader header = EthernetHeader.parse(hex.substring(EthernetHeader.MAX_HEX).toBitString());
 		hex = hex.remove(header.getHeaderHexLength());
 		Packet p = null;
-		if (Sniffer.isIPPacket(hex)) {
+		if (header.getEtherType() == Config.ETH_IP_ETHERTYPE) {
 			p = Sniffer.processIPPacket(cli, hex);
+		} else if (header.getEtherType() == Config.ETH_ARP_ETHERTYPE) {
+			p = Sniffer.processARPPacket(cli, hex);
 		}
 		return p != null ? new Packet(header, p) : null;
 	}
@@ -111,6 +114,16 @@ public class Sniffer {
 			p = Sniffer.processUDPPacket(cli, hex);
 		}
 		return p != null ? new Packet(header, p) : null;
+	}
+	
+	private static Packet processARPPacket(CommandCLI cli, HexString hex) {
+		ARPHeader header = ARPHeader.parse(hex.substring(ARPHeader.MAX_HEX).toBitString());
+		hex = hex.remove(header.getHeaderHexLength());
+		Packet p = null;
+		if (header.getProtocolType() == Config.ETH_IP_ETHERTYPE) {
+			p = Sniffer.processIPPacket(cli, hex);
+		}
+		return p != null ? p : null;
 	}
 	
 	private static Packet processICMPPacket(CommandCLI cli, HexString hex) {
@@ -178,17 +191,8 @@ public class Sniffer {
 		return Sniffer.isEthernetEtherType(header.getEtherType());
 	}
 	
-	private static boolean isIPPacket(HexString hex) {
-		IPHeader header = IPHeader.parse(hex.substring(IPHeader.MAX_HEX).toBitString());
-		return header.getVersion() == 4 && Sniffer.isIPProtocol(header.getProtocol());
-	}
-	
 	private static boolean isEthernetEtherType(int etherType) {
 		return etherType == Config.ETH_ARP_ETHERTYPE || etherType == Config.ETH_IP_ETHERTYPE;
-	}
-	
-	private static boolean isIPProtocol(int protocol) {
-		return protocol == Config.IP_ICMP_PROTOCOL || protocol == Config.IP_TCP_PROTOCOL || protocol == Config.IP_UDP_PROTOCOL;
 	}
 	
 	private static void log(Logger logger, String m) {
