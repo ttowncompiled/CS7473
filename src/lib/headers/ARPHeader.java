@@ -14,6 +14,19 @@ public class ARPHeader extends Header {
 	private int senderProtocolAddress;
 	private long targetHardwareAddress;
 	private int targetProtocolAddress;
+	
+	public static ARPHeader parse(BitString packet) {
+		short HTYPE = packet.substring(0, 16).toShort();
+		short PTYPE = packet.substring(16, 32).toShort();
+		byte HLEN = packet.substring(32, 40).toByte();
+		byte PLEN = packet.substring(40, 48).toByte();
+		short OPER = packet.substring(48, 64).toShort();
+		long SHA = packet.substring(64, 112).toLong();
+		int SPA = packet.substring(112, 144).toInt();
+		long THA = packet.substring(144, 192).toLong();
+		int TPA = packet.substring(192, 224).toInt();
+		return new ARPHeader(HTYPE, PTYPE, HLEN, PLEN, OPER, SHA, SPA, THA, TPA);
+	}
 
 	public ARPHeader(short HTYPE, short PTYPE, byte HLEN, byte PLEN, short OPER, long SHA, int SPA, long THA, int TPA) {
 		super(Config.ARP);

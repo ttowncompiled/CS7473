@@ -9,6 +9,13 @@ public class ICMPHeader extends Header {
 	private byte code;
 	private short checksum;
 	
+	public static ICMPHeader parse(BitString packet) {
+		byte ICMPtype = packet.substring(0, 8).toByte();
+		byte code = packet.substring(8, 16).toByte();
+		short checksum = packet.substring(16, 32).toShort();
+		return new ICMPHeader(ICMPtype, code, checksum);
+	}
+	
 	public ICMPHeader(byte type, byte code, short checksum) {
 		super(Config.ICMP);
 		this.ICMPType = type;

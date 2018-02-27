@@ -10,6 +10,14 @@ public class UDPHeader extends Header {
 	private short length;
 	private short checksum;
 	
+	public static UDPHeader parse(BitString packet) {
+		short source = packet.substring(0, 16).toShort();
+		short dest = packet.substring(16, 32).toShort();
+		short length = packet.substring(32, 48).toShort();
+		short checksum = packet.substring(48, 64).toShort();
+		return new UDPHeader(source, dest, length, checksum);
+	}
+	
 	public UDPHeader(short source, short dest, short length, short checksum) {
 		super(Config.UDP);
 		this.sourcePortAddress = source;
