@@ -93,12 +93,31 @@ public class BitString implements Showable {
 		this.spaced = spaced;
 	}
 	
+	public int length() {
+		return this.S.length();
+	}
+	
 	public BitString substring(int j, int k) {
 		return new BitString(this.S.substring(j, Math.min(this.S.length(), k)), this.spaced);
 	}
 	
+	public BitString substring(int n) {
+		return new BitString(this.S.substring(0, Math.min(this.S.length(), n)), this.spaced);
+	}
+	
+	public BitString remove(int n) {
+		if (n >= this.S.length()) {
+			return new BitString("", this.spaced);
+		}
+		return new BitString(this.S.substring(n, this.S.length()));
+	}
+	
 	public BitString spaced() {
 		return new BitString(this.S, true);
+	}
+	
+	public boolean isEmpty() {
+		return this.S.isEmpty();
 	}
 	
 	public boolean isSpaced() {

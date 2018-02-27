@@ -75,7 +75,7 @@ public class UDPHeader extends Header {
 		for (int i = 0; i < 63; i++) {
 			rep.append(i % 2 == 0 ? "-" : "+");
 		}
-		rep.append("+\n");
+		rep.append("+");
 		
 		return rep.toString();
 	}
@@ -85,9 +85,9 @@ public class UDPHeader extends Header {
 		StringBuilder rep = new StringBuilder();
 		
 		rep.append(UDPHeader.bitIndices());
-		rep.append(UDPHeader.separator());
+		rep.append(UDPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromShort(this.sourcePortAddress).spaced()).append("|").append(BitString.fromShort(this.destinationPortAddress).spaced()).append("|\n");
-		rep.append(UDPHeader.separator());
+		rep.append(UDPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromShort(this.length).spaced()).append("|").append(BitString.fromShort(this.checksum).spaced()).append("|\n");
 		rep.append(UDPHeader.separator());
 		

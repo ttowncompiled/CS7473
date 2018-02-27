@@ -22,7 +22,11 @@ public class HTTPTest {
 			hex = hex.remove(8*ip.getIPHeaderLength());
 			TCPHeader tcp = TCPHeader.parse(hex.substring(TCPHeader.MAX_HEX).toBitString());
 			hex = hex.remove(8*tcp.getDataOffset());
-			packets[i] = new Packet(eth, new Packet(ip, new Packet(tcp, hex.toString().length() > 0 ? new DataPacket(hex.toBitString()) : null)));
+			if (hex.isEmpty()) {
+				packets[i] = new Packet(eth, new Packet(ip, new Packet(tcp, null)));
+			} else {
+				packets[i] = new Packet(eth, new Packet(ip, new Packet(tcp, new DataPacket(hex))));
+			}
 			packets[i].show();
 		}
 	}

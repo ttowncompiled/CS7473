@@ -27,7 +27,10 @@ public class Packet implements Showable {
 	
 	@Override
 	public String toString() {
-		return new StringBuilder().append(this.header.toString().trim()).append("\n").append(this.next != null ? this.next : "").toString();
+		if (this.next == null) {
+			return new StringBuilder().append(this.header.toString()).toString();
+		}
+		return new StringBuilder().append(this.header.toString()).append("\n").append(this.next).toString();
 	}
 	
 	public void show() {

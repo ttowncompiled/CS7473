@@ -70,7 +70,7 @@ public class EthernetHeader extends Header {
 		for (int i = 0; i < 223; i++) {
 			rep.append(i % 2 == 0 ? "-" : "+");
 		}
-		rep.append("+\n");
+		rep.append("+");
 		
 		return rep.toString();
 	}
@@ -80,7 +80,7 @@ public class EthernetHeader extends Header {
 		StringBuilder rep = new StringBuilder();
 		
 		rep.append(EthernetHeader.bitIndices());
-		rep.append(EthernetHeader.separator());
+		rep.append(EthernetHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromLong(this.destinationMACAddress, 48).spaced()).append("|").append(BitString.fromLong(this.sourceMACAddress, 48).spaced()).append("|").append(BitString.fromShort(this.etherType).spaced()).append("|\n");
 		rep.append(EthernetHeader.separator());
 		

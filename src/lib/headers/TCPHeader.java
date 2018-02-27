@@ -133,7 +133,7 @@ public class TCPHeader extends Header {
 		for (int i = 0; i < 63; i++) {
 			rep.append(i % 2 == 0 ? "-" : "+");
 		}
-		rep.append("+\n");
+		rep.append("+");
 		
 		return rep.toString();
 	}
@@ -143,17 +143,17 @@ public class TCPHeader extends Header {
 		StringBuilder rep = new StringBuilder();
 		
 		rep.append(TCPHeader.bitIndices());
-		rep.append(TCPHeader.separator());
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromShort(this.sourcePortAddress).spaced()).append("|").append(BitString.fromShort(this.destinationPortAddress).spaced()).append("|\n");
-		rep.append(TCPHeader.separator());
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromInt(this.sequenceNumber).spaced()).append("|\n");
-		rep.append(TCPHeader.separator());
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromInt(this.acknowledgementNumber).spaced()).append("|\n");
-		rep.append(TCPHeader.separator());
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromByte(this.dataOffset, 4).spaced()).append("|").append(BitString.fromByte(this.reserved, 3).spaced()).append("|").append(BitString.fromBits(this.flags).spaced()).append("|").append(BitString.fromShort(this.windowSize).spaced()).append("|\n");
-		rep.append(TCPHeader.separator());
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromShort(this.checksum).spaced()).append("|").append(BitString.fromShort(this.urgentPointer).spaced()).append("|\n");
-		rep.append(TCPHeader.separator());
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|");
 		if (this.optionsPadding == null || this.optionsPadding.length == 0) {
 			rep.append(BitString.fromInt(0).spaced()).append("|\n");

@@ -110,7 +110,7 @@ public class ARPHeader extends Header {
 		for (int i = 0; i < 31; i++) {
 			rep.append(i % 2 == 0 ? "-" : "+");
 		}
-		rep.append("+\n");
+		rep.append("+");
 		
 		return rep.toString();
 	}
@@ -120,29 +120,29 @@ public class ARPHeader extends Header {
 		StringBuilder rep = new StringBuilder();
 		
 		rep.append(ARPHeader.bitIndices());
-		rep.append(ARPHeader.separator());
+		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromShort(this.hardwareType).spaced()).append("|\n");
-		rep.append(ARPHeader.separator());
+		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromShort(this.protocolType).spaced()).append("|\n");
-		rep.append(ARPHeader.separator());
+		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromByte(this.hardwareAddressLength).spaced()).append("|").append(BitString.fromByte(this.protocolAddressLength).spaced()).append("|\n");
-		rep.append(ARPHeader.separator());
+		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromShort(this.operation).spaced()).append("|\n");
-		rep.append(ARPHeader.separator());
+		rep.append(ARPHeader.separator()).append("\n");
 		BitString SHA = BitString.fromLong(this.senderHardwareAddress, 48).spaced();
 		rep.append("|").append(SHA.substring(0, 16)).append("\n");
 		rep.append(" ").append(SHA.substring(16, 32)).append("\n");
 		rep.append(" ").append(SHA.substring(32, 48)).append("|\n");
-		rep.append(ARPHeader.separator());
+		rep.append(ARPHeader.separator()).append("\n");
 		BitString SPA = BitString.fromInt(this.senderProtocolAddress).spaced();
 		rep.append("|").append(SPA.substring(0, 16)).append("\n");
 		rep.append(" ").append(SPA.substring(16, 32)).append("|\n");
-		rep.append(ARPHeader.separator());
+		rep.append(ARPHeader.separator()).append("\n");
 		BitString THA = BitString.fromLong(this.targetHardwareAddress, 48).spaced();
 		rep.append("|").append(THA.substring(0, 16)).append("\n");
 		rep.append(" ").append(THA.substring(16, 32)).append("\n");
 		rep.append(" ").append(THA.substring(32, 48)).append("|\n");
-		rep.append(ARPHeader.separator());
+		rep.append(ARPHeader.separator()).append("\n");
 		BitString TPA = BitString.fromInt(this.targetProtocolAddress).spaced();
 		rep.append("|").append(TPA.substring(0, 16)).append("\n");
 		rep.append(" ").append(TPA.substring(16, 32)).append("|\n");

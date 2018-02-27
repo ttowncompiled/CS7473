@@ -17,6 +17,10 @@ public class HexString implements Showable {
 		this.spaced = spaced;
 	}
 	
+	public int length() {
+		return this.S.length();
+	}
+	
 	public HexString substring(int j, int k) {
 		return new HexString(this.S.substring(j, Math.min(this.S.length(), k)), this.spaced);
 	}
@@ -34,6 +38,10 @@ public class HexString implements Showable {
 	
 	public HexString spaced() {
 		return new HexString(this.S, true);
+	}
+	
+	public boolean isEmpty() {
+		return this.S.isEmpty();
 	}
 	
 	public boolean isSpaced() {

@@ -22,7 +22,7 @@ public class HexFile {
 		Scanner scanner = new Scanner(new File(filepath));
 		StringBuilder rep = new StringBuilder();
 		while (scanner.hasNextLine()) {
-			String line = scanner.nextLine();
+			String line = scanner.nextLine().trim();
 			if (! line.equals("")) {
 				rep.append(line);
 				continue;

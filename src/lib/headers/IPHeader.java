@@ -146,7 +146,7 @@ public class IPHeader extends Header {
 		for (int i = 0; i < 63; i++) {
 			rep.append(i % 2 == 0 ? "-" : "+");
 		}
-		rep.append("+\n");
+		rep.append("+");
 		
 		return rep.toString();
 	}
@@ -156,17 +156,17 @@ public class IPHeader extends Header {
 		StringBuilder rep = new StringBuilder();
 		
 		rep.append(IPHeader.bitIndices());
-		rep.append(IPHeader.separator());
+		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromByte(this.version, 4).spaced()).append("|").append(BitString.fromByte(this.IPHeaderLength, 4).spaced()).append("|").append(BitString.fromByte(this.typeOfService).spaced()).append("|").append(BitString.fromShort(this.totalLength).spaced()).append("|\n");
-		rep.append(IPHeader.separator());
+		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromShort(this.identification).spaced()).append("|").append(BitString.fromBits(this.flags).spaced()).append("|").append(BitString.fromShort(this.fragmentationOffset, 13).spaced()).append("|\n");
-		rep.append(IPHeader.separator());
+		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromByte(this.timeToLive).spaced()).append("|").append(BitString.fromByte(this.protocol).spaced()).append("|").append(BitString.fromShort(this.checksum).spaced()).append("|\n");
-		rep.append(IPHeader.separator());
+		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromInt(this.sourceIPAddress).spaced()).append("|\n");
-		rep.append(IPHeader.separator());
+		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromInt(this.destinationIPAddress).spaced()).append("|\n");
-		rep.append(IPHeader.separator());
+		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|");
 		if (this.optionsPadding == null || this.optionsPadding.length == 0) {
 			rep.append(BitString.fromInt(0).spaced()).append("|\n");

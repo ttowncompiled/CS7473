@@ -2,13 +2,13 @@ package lib.packets;
 
 import lib.Showable;
 import lib.headers.Header;
-import util.BitString;
+import util.HexString;
 
 public class PacketBuilder implements Showable {
 
 	private Header header;
 	private PacketBuilder next;
-	private BitString data;
+	private HexString data;
 	
 	public PacketBuilder() {
 		this.header = null;
@@ -26,7 +26,7 @@ public class PacketBuilder implements Showable {
 		return this;
 	}
 	
-	public PacketBuilder setData(BitString data) {
+	public PacketBuilder setData(HexString data) {
 		this.data = data;
 		return this;
 	}

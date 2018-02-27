@@ -68,7 +68,7 @@ public class ICMPHeader extends Header {
 		for (int i = 0; i < 63; i++) {
 			rep.append(i % 2 == 0 ? "-" : "+");
 		}
-		rep.append("+\n");
+		rep.append("+");
 		
 		return rep.toString();
 	}
@@ -78,7 +78,7 @@ public class ICMPHeader extends Header {
 		StringBuilder rep = new StringBuilder();
 		
 		rep.append(ICMPHeader.bitIndices());
-		rep.append(ICMPHeader.separator());
+		rep.append(ICMPHeader.separator()).append("\n");
 		rep.append("|").append(BitString.fromByte(this.ICMPType).spaced()).append("|").append(BitString.fromByte(this.code).spaced()).append("|").append(BitString.fromShort(this.checksum).spaced()).append("|\n");
 		rep.append(ICMPHeader.separator());
 		
