@@ -90,16 +90,24 @@ public class CommandCLI {
 		return this.cmd.hasOption(CommandCLI.SRC);
 	}
 	
-	public String getSource() {
-		return this.cmd.getOptionValue(CommandCLI.SRC);
+	public boolean hasValidSource() {
+		return StringUtils.isAlphanumeric(this.cmd.getOptionValue(CommandCLI.SRC)) && Integer.parseInt(this.cmd.getOptionValue(CommandCLI.SRC)) > 0;
+	}
+	
+	public int getSource() {
+		return Integer.parseInt(this.cmd.getOptionValue(CommandCLI.SRC));
 	}
 	
 	public boolean hasDest() {
 		return this.cmd.hasOption(CommandCLI.DEST);
 	}
 	
-	public String getDest() {
-		return this.cmd.getOptionValue(CommandCLI.DEST);
+	public boolean hasValidDest() {
+		return StringUtils.isAlphanumeric(this.cmd.getOptionValue(CommandCLI.DEST)) && Integer.parseInt(this.cmd.getOptionValue(CommandCLI.DEST)) > 0;
+	}
+	
+	public int getDest() {
+		return Integer.parseInt(this.cmd.getOptionValue(CommandCLI.DEST));
 	}
 	
 	public boolean hasSourceOrDest() {
