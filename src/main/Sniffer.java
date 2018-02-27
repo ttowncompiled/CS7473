@@ -34,7 +34,7 @@ public class Sniffer {
 	
 	private static void sniffFile(CommandCLI cli) throws FileNotFoundException {
 		HexString[] hexes = HexFile.parse(cli.getInput());
-		for (int i = 0; i < hexes.length; i++) {
+		for (int i = 0; i < hexes.length && (! cli.hasCount() || i < cli.getCount()); i++) {
 			HexString hex = hexes[i];
 			if (Sniffer.isEthernetPacket(hex)) {
 				Packet p = Sniffer.processEthernetPacket(cli, hex);
