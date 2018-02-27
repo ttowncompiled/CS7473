@@ -36,6 +36,10 @@ public class HexString implements Showable {
 		return this.substring(n, this.S.length());
 	}
 	
+	public HexString concat(HexString h) {
+		return new HexString(this.S.concat(h.S), this.spaced);
+	}
+	
 	public HexString spaced() {
 		return new HexString(this.S, true);
 	}

@@ -2,6 +2,7 @@ package lib.headers;
 
 import util.BitString;
 import util.Config;
+import util.HexString;
 
 public class TCPHeader extends Header {
 	
@@ -146,7 +147,25 @@ public class TCPHeader extends Header {
 		return rep.toString();
 	}
 	
-	@Override
+	public HexString toHexString() {
+		BitString bits = BitString.fromShort(this.sourcePortAddress)
+								  .concat(BitString.fromShort(this.destinationPortAddress))
+								  .concat(BitString.fromInt(this.sequenceNumber))
+								  .concat(BitString.fromInt(this.acknowledgementNumber))
+								  .concat(BitString.fromByte(this.dataOffset, 4))
+								  .concat(BitString.fromByte(this.reserved, 3))
+								  .concat(BitString.fromBits(this.flags))
+								  .concat(BitString.fromShort(this.windowSize))
+								  .concat(BitString.fromShort(this.checksum))
+								  .concat(BitString.fromShort(this.urgentPointer));
+		if (this.optionsPadding != null && this.optionsPadding.length > 0) {
+			for (int i = 0; i < this.optionsPadding.length; i++) {
+				bits = bits.concat(BitString.fromInt(this.optionsPadding[i]));
+			}
+		}
+		return bits.toHexString();
+	}
+	
 	public String toString() {
 		StringBuilder rep = new StringBuilder();
 		

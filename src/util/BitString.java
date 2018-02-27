@@ -112,6 +112,10 @@ public class BitString implements Showable {
 		return new BitString(this.S.substring(n, this.S.length()));
 	}
 	
+	public BitString concat(BitString b) {
+		return new BitString(this.S.concat(b.S), this.spaced);
+	}
+	
 	public BitString spaced() {
 		return new BitString(this.S, true);
 	}
@@ -160,6 +164,56 @@ public class BitString implements Showable {
 	
 	public long toLong() {
 		return this.toLong(64);
+	}
+	
+	private static String convert(String s) {
+		switch (s) {
+			case "0000":
+				return "0";
+			case "0001":
+				return "1";
+			case "0010":
+				return "2";
+			case "0011":
+				return "3";
+			case "0100":
+				return "4";
+			case "0101":
+				return "5";
+			case "0110":
+				return "6";
+			case "0111":
+				return "7";
+			case "1000":
+				return "8";
+			case "1001":
+				return "9";
+			case "1010":
+				return "a";
+			case "1011":
+				return "b";
+			case "1100":
+				return "c";
+			case "1101":
+				return "d";
+			case "1110":
+				return "e";
+			case "1111":
+				return "f";
+			default:
+				return "";
+		}
+	}
+	
+	public HexString toHexString() {
+		if (this.S.length() % 4 > 0) {
+			return null;
+		}
+		StringBuilder rep = new StringBuilder();
+		for (int i = 0; i < this.S.length()/4; i++) {
+			rep.append(BitString.convert(this.S.substring(4*i, 4*(i+1))));
+		}
+		return new HexString(rep.toString(), this.spaced);
 	}
 	
 	@Override

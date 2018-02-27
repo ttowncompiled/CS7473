@@ -1,6 +1,7 @@
 package lib.headers;
 
 import util.Config;
+import util.HexString;
 
 public class NullHeader extends Header {
 	
@@ -21,7 +22,10 @@ public class NullHeader extends Header {
 		return 0;
 	}
 	
-	@Override
+	public HexString toHexString() {
+		return new HexString("");
+	}
+	
 	public String toString() {
 		return "";
 	}

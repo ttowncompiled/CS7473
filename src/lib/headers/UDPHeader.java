@@ -2,6 +2,7 @@ package lib.headers;
 
 import util.BitString;
 import util.Config;
+import util.HexString;
 
 public class UDPHeader extends Header {
 	
@@ -91,7 +92,14 @@ public class UDPHeader extends Header {
 		return rep.toString();
 	}
 	
-	@Override
+	public HexString toHexString() {
+		return BitString.fromShort(this.sourcePortAddress)
+						.concat(BitString.fromShort(this.destinationPortAddress))
+						.concat(BitString.fromShort(this.length))
+						.concat(BitString.fromShort(this.checksum))
+						.toHexString();
+	}
+	
 	public String toString() {
 		StringBuilder rep = new StringBuilder();
 		

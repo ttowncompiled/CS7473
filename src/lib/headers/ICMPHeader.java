@@ -2,6 +2,7 @@ package lib.headers;
 
 import util.BitString;
 import util.Config;
+import util.HexString;
 
 public class ICMPHeader extends Header {
 	
@@ -84,7 +85,13 @@ public class ICMPHeader extends Header {
 		return rep.toString();
 	}
 	
-	@Override
+	public HexString toHexString() {
+		return BitString.fromByte(this.ICMPType)
+						.concat(BitString.fromByte(this.code))
+						.concat(BitString.fromShort(this.checksum))
+						.toHexString();
+	}
+	
 	public String toString() {
 		StringBuilder rep = new StringBuilder();
 		

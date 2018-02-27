@@ -1,6 +1,8 @@
 package lib.headers;
 
-import util.*;
+import util.BitString;
+import util.Config;
+import util.HexString;
 
 public class EthernetHeader extends Header {
 	
@@ -83,7 +85,13 @@ public class EthernetHeader extends Header {
 		return rep.toString();
 	}
 	
-	@Override
+	public HexString toHexString() {
+		return BitString.fromLong(this.destinationMACAddress, 48)
+						.concat(BitString.fromLong(this.sourceMACAddress, 48))
+						.concat(BitString.fromShort(this.etherType))
+						.toHexString();
+	}
+	
 	public String toString() {
 		StringBuilder rep = new StringBuilder();
 		

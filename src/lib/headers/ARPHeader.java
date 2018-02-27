@@ -2,6 +2,7 @@ package lib.headers;
 
 import util.BitString;
 import util.Config;
+import util.HexString;
 
 public class ARPHeader extends Header {
 	
@@ -126,7 +127,19 @@ public class ARPHeader extends Header {
 		return rep.toString();
 	}
 	
-	@Override
+	public HexString toHexString() {
+		return BitString.fromShort(this.hardwareType)
+				 		.concat(BitString.fromShort(this.protocolType))
+				 		.concat(BitString.fromByte(this.hardwareAddressLength))
+				 		.concat(BitString.fromByte(this.protocolAddressLength))
+				 		.concat(BitString.fromShort(this.operation))
+				 		.concat(BitString.fromLong(this.senderHardwareAddress, 48))
+				 		.concat(BitString.fromInt(this.senderProtocolAddress))
+				 		.concat(BitString.fromLong(this.targetHardwareAddress, 48))
+				 		.concat(BitString.fromInt(this.targetProtocolAddress))
+				 		.toHexString();
+	}
+	
 	public String toString() {
 		StringBuilder rep = new StringBuilder();
 		

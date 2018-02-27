@@ -1,6 +1,7 @@
 package lib.headers;
 
 import lib.Showable;
+import util.HexString;
 
 public abstract class Header implements Showable {
 
@@ -17,6 +18,8 @@ public abstract class Header implements Showable {
 	public abstract int getHeaderBitLength();
 	
 	public abstract int getHeaderHexLength();
+	
+	public abstract HexString toHexString();
 	
 	@Override
 	public abstract String toString();
