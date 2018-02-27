@@ -36,11 +36,18 @@ public class Sniffer {
 		HexString[] hexes = HexFile.parse(cli.getInput());
 		for (int i = 0; i < hexes.length && (! cli.hasCount() || i < cli.getCount()); i++) {
 			HexString hex = hexes[i];
+			Packet p = null;
 			if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
-				Packet p = Sniffer.processEthernetPacket(cli, hex);
-				if (p != null) {
-					p.show();
-				}
+				p = Sniffer.processEthernetPacket(cli, hex);
+			}
+			if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
+				continue;
+			}
+			if (cli.hasHeaderInfo() && ! cli.hasType()) {
+				Sniffer.sniffHeaderInfo(p);
+			}
+			if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
+				Sniffer.sniffHeaderInfo(p, cli.getType());
 			}
 		}
 	}
@@ -49,7 +56,7 @@ public class Sniffer {
 		EthernetHeader header = EthernetHeader.parse(hex.substring(EthernetHeader.MAX_HEX).toBitString());
 		hex = hex.remove(header.getHeaderHexLength());
 		Packet p = null;
-		if (Sniffer.isIPPacket(hex) && (! cli.hasType() || Sniffer.isIPType(cli.getType()))) {
+		if (Sniffer.isIPPacket(hex)) {
 			p = Sniffer.processIPPacket(cli, hex);
 		}
 		return p != null ? new Packet(header, p) : null;
@@ -59,11 +66,11 @@ public class Sniffer {
 		IPHeader header = IPHeader.parse(hex.substring(IPHeader.MAX_HEX).toBitString());
 		hex = hex.remove(header.getHeaderHexLength());
 		Packet p = null;
-		if (header.getProtocol() == Config.IP_ICMP_PROTOCOL && (! cli.hasType() || cli.getType().equals(Config.ICMP))) {
+		if (header.getProtocol() == Config.IP_ICMP_PROTOCOL) {
 			p = Sniffer.processICMPPacket(cli, hex);
-		} else if (header.getProtocol() == Config.IP_TCP_PROTOCOL && (! cli.hasType() || cli.getType().equals(Config.TCP))) {
+		} else if (header.getProtocol() == Config.IP_TCP_PROTOCOL) {
 			p = Sniffer.processTCPPacket(cli, hex);
-		} else if (header.getProtocol() == Config.IP_UDP_PROTOCOL && (! cli.hasType() || cli.getType().equals(Config.UDP))) {
+		} else if (header.getProtocol() == Config.IP_UDP_PROTOCOL) {
 			p = Sniffer.processUDPPacket(cli, hex);
 		}
 		return p != null ? new Packet(header, p) : null;
@@ -87,6 +94,32 @@ public class Sniffer {
 		return Packet.build(hex, header);
 	}
 	
+	private static void sniffHeaderInfo(Packet p) {
+		while (p != null) {
+			p.getHeader().show();
+			p = p.getNext();
+		}
+	}
+	
+	private static void sniffHeaderInfo(Packet p, String type) {
+		while (p != null && ! p.getType().equals(type)) {
+			p = p.getNext();
+		}
+		if (p != null) {
+			p.getHeader().show();
+		}
+	}
+	
+	private static boolean checkType(Packet p, String type) {
+		while (p != null) {
+			if (p.getType().equals(type)) {
+				return true;
+			}
+			p = p.getNext();
+		}
+		return false;
+	}
+	
 	private static void sniffNetwork(CommandCLI cli) {
 		
 	}
@@ -107,9 +140,5 @@ public class Sniffer {
 	
 	private static boolean isIPProtocol(int protocol) {
 		return protocol == Config.IP_ICMP_PROTOCOL || protocol == Config.IP_TCP_PROTOCOL || protocol == Config.IP_UDP_PROTOCOL;
-	}
-	
-	private static boolean isIPType(String type) {
-		return type.equals(Config.IP) || type.equals(Config.ICMP) || type.equals(Config.TCP) || type.equals(Config.UDP);
 	}
 }
