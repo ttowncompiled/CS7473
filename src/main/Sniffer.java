@@ -65,11 +65,17 @@ public class Sniffer {
 	private static Packet processIPPacket(CommandCLI cli, HexString hex) {
 		IPHeader header = IPHeader.parse(hex.substring(IPHeader.MAX_HEX).toBitString());
 		hex = hex.remove(header.getHeaderHexLength());
-		if (cli.hasSource() && cli.hasValidSource() && header.getSourceIPAddress() != cli.getSource()) {
+		if (! cli.hasSourceOrDest() && (cli.hasSource() && cli.hasValidSource() && header.getSourceIPAddress() != cli.getSource() || cli.hasSourceAndDest() && cli.hasValidSourceAndDest() && header.getSourceIPAddress() != cli.getSourceAndDest()[0])) {
 			return null;
 		}
-		if (cli.hasDest() && cli.hasValidDest() && header.getDestinationIPAddress() != cli.getDest()) {
+		if (! cli.hasSourceOrDest() && (cli.hasDest() && cli.hasValidDest() && header.getDestinationIPAddress() != cli.getDest() || cli.hasSourceAndDest() && cli.hasValidSourceAndDest() && header.getDestinationIPAddress() != cli.getSourceAndDest()[1])) {
 			return null;
+		}
+		if (cli.hasSourceOrDest() && cli.hasValidSourceOrDest()) {
+			int[] sord = cli.getSourceOrDest();
+			if (header.getSourceIPAddress() != sord[0] || header.getDestinationIPAddress() != sord[1]) {
+				return null;
+			}
 		}
 		Packet p = null;
 		if (header.getProtocol() == Config.IP_ICMP_PROTOCOL) {

@@ -91,11 +91,11 @@ public class CommandCLI {
 	}
 	
 	public boolean hasValidSource() {
-		return StringUtils.isAlphanumeric(this.cmd.getOptionValue(CommandCLI.SRC)) && Integer.parseInt(this.cmd.getOptionValue(CommandCLI.SRC)) > 0;
+		return StringUtils.isAlphanumeric(this.cmd.getOptionValue(CommandCLI.SRC));
 	}
 	
 	public int getSource() {
-		return Integer.parseInt(this.cmd.getOptionValue(CommandCLI.SRC));
+		return (int) Long.parseLong(this.cmd.getOptionValue(CommandCLI.SRC));
 	}
 	
 	public boolean hasDest() {
@@ -103,27 +103,43 @@ public class CommandCLI {
 	}
 	
 	public boolean hasValidDest() {
-		return StringUtils.isAlphanumeric(this.cmd.getOptionValue(CommandCLI.DEST)) && Integer.parseInt(this.cmd.getOptionValue(CommandCLI.DEST)) > 0;
+		return StringUtils.isAlphanumeric(this.cmd.getOptionValue(CommandCLI.DEST));
 	}
 	
 	public int getDest() {
-		return Integer.parseInt(this.cmd.getOptionValue(CommandCLI.DEST));
+		return (int) Long.parseLong(this.cmd.getOptionValue(CommandCLI.DEST));
 	}
 	
 	public boolean hasSourceOrDest() {
 		return this.cmd.hasOption(CommandCLI.SORD);
 	}
 	
-	public String[] getSourceOrDest() {
-		return this.cmd.getOptionValues(CommandCLI.SORD);
+	public boolean hasValidSourceOrDest() {
+		String[] sord = this.cmd.getOptionValues(CommandCLI.SORD);
+		return StringUtils.isAlphanumeric(sord[0]) && StringUtils.isAlphanumeric(sord[1]);
+	}
+	
+	public int[] getSourceOrDest() {
+		int[] sord = new int[2];
+		sord[0] = (int) Long.parseLong(this.cmd.getOptionValues(CommandCLI.SORD)[0]);
+		sord[1] = (int) Long.parseLong(this.cmd.getOptionValues(CommandCLI.SORD)[1]);
+		return sord;
 	}
 	
 	public boolean hasSourceAndDest() {
 		return this.cmd.hasOption(CommandCLI.SANDD);
 	}
 	
-	public String[] getSourceAndDest() {
-		return this.cmd.getOptionValues(CommandCLI.SANDD);
+	public boolean hasValidSourceAndDest() {
+		String[] sandd = this.cmd.getOptionValues(CommandCLI.SANDD);
+		return StringUtils.isAlphanumeric(sandd[0]) && StringUtils.isAlphanumeric(sandd[1]);
+	}
+	
+	public int[] getSourceAndDest() {
+		int[] sandd = new int[2];
+		sandd[0] = (int) Long.parseLong(this.cmd.getOptionValues(CommandCLI.SANDD)[0]);
+		sandd[1] = (int) Long.parseLong(this.cmd.getOptionValues(CommandCLI.SANDD)[1]);
+		return sandd;
 	}
 	
 	public boolean hasSourcePort() {
