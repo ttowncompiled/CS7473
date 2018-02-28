@@ -54,7 +54,7 @@ public class SnifferCLI {
 	}
 	
 	public int getCount() {
-		return StringUtils.isAlphanumeric(this.cmd.getOptionValue(SnifferCLI.COUNT)) ? Integer.parseInt(this.cmd.getOptionValue(SnifferCLI.COUNT)) : 0;
+		return StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.COUNT)) ? Integer.parseInt(this.cmd.getOptionValue(SnifferCLI.COUNT)) : 0;
 	}
 	
 	public boolean hasInput() {
@@ -95,7 +95,7 @@ public class SnifferCLI {
 	}
 	
 	public boolean hasValidSource() {
-		return StringUtils.isAlphanumeric(this.cmd.getOptionValue(SnifferCLI.SRC));
+		return StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.SRC));
 	}
 	
 	public int getSource() {
@@ -107,7 +107,7 @@ public class SnifferCLI {
 	}
 	
 	public boolean hasValidDest() {
-		return StringUtils.isAlphanumeric(this.cmd.getOptionValue(SnifferCLI.DEST));
+		return StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.DEST));
 	}
 	
 	public int getDest() {
@@ -120,7 +120,7 @@ public class SnifferCLI {
 	
 	public boolean hasValidSourceOrDest() {
 		String[] sord = this.cmd.getOptionValues(SnifferCLI.SORD);
-		return StringUtils.isAlphanumeric(sord[0]) && StringUtils.isAlphanumeric(sord[1]);
+		return StringUtils.isNumeric(sord[0]) && StringUtils.isNumeric(sord[1]);
 	}
 	
 	public int[] getSourceOrDest() {
@@ -136,7 +136,7 @@ public class SnifferCLI {
 	
 	public boolean hasValidSourceAndDest() {
 		String[] sandd = this.cmd.getOptionValues(SnifferCLI.SANDD);
-		return StringUtils.isAlphanumeric(sandd[0]) && StringUtils.isAlphanumeric(sandd[1]);
+		return StringUtils.isNumeric(sandd[0]) && StringUtils.isNumeric(sandd[1]);
 	}
 	
 	public int[] getSourceAndDest() {
@@ -155,7 +155,7 @@ public class SnifferCLI {
 		if (sports.length != 2) {
 			return -1;
 		}
-		if (! StringUtils.isAlphanumeric(sports[0])) {
+		if (! StringUtils.isNumeric(sports[0])) {
 			return -1;
 		}
 		return Integer.parseInt(sports[0]);
@@ -166,7 +166,7 @@ public class SnifferCLI {
 		if (sports.length != 2) {
 			return -1;
 		}
-		if (! StringUtils.isAlphanumeric(sports[1])) {
+		if (! StringUtils.isNumeric(sports[1])) {
 			return -1;
 		}
 		return Integer.parseInt(sports[1]);
@@ -181,7 +181,7 @@ public class SnifferCLI {
 		if (dports.length != 2) {
 			return -1;
 		}
-		if (! StringUtils.isAlphanumeric(dports[0])) {
+		if (! StringUtils.isNumeric(dports[0])) {
 			return -1;
 		}
 		return Integer.parseInt(dports[0]);
@@ -192,7 +192,7 @@ public class SnifferCLI {
 		if (dports.length != 2) {
 			return -1;
 		}
-		if (! StringUtils.isAlphanumeric(dports[1])) {
+		if (! StringUtils.isNumeric(dports[1])) {
 			return -1;
 		}
 		return Integer.parseInt(dports[1]);
