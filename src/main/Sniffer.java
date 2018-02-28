@@ -29,7 +29,7 @@ public class Sniffer {
 	public static int count = 0;
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
-		CommandCLI cli = new CommandCLI(Sniffer.NAME, args);
+		SnifferCLI cli = new SnifferCLI(Sniffer.NAME, args);
 		if (cli.hasHelp()) {
 			Sniffer.help(cli);
 		} else if (cli.hasShow()) {
@@ -41,7 +41,7 @@ public class Sniffer {
 		}
 	}
 	
-	private static void help(CommandCLI cli) {
+	private static void help(SnifferCLI cli) {
 		cli.help();
 	}
 	
@@ -57,7 +57,7 @@ public class Sniffer {
 		}
 	}
 	
-	private static void sniffFile(CommandCLI cli) throws FileNotFoundException, IOException {
+	private static void sniffFile(SnifferCLI cli) throws FileNotFoundException, IOException {
 		HexString[] hexes = HexFile.parse(cli.getInput());
 		if (cli.hasOutput()) {
 			FileWriter writer = new FileWriter(cli.getOutput(), false);
@@ -85,7 +85,7 @@ public class Sniffer {
 		}
 	}
 	
-	private static void sniffNetwork(CommandCLI cli) throws IOException {
+	private static void sniffNetwork(SnifferCLI cli) throws IOException {
 		if (cli.hasDev()) {
 			Sniffer.adapter = Sniffer.openAdapter(cli.getDev());
 		} else {
@@ -99,8 +99,8 @@ public class Sniffer {
 			writer.append("");
 			writer.close();
 		}
-		Sniffer.adapter.loop(Pcap.LOOP_INFINITE, new PcapPacketHandler<CommandCLI>() {
-			public void nextPacket(PcapPacket packet, CommandCLI cli) {
+		Sniffer.adapter.loop(Pcap.LOOP_INFINITE, new PcapPacketHandler<SnifferCLI>() {
+			public void nextPacket(PcapPacket packet, SnifferCLI cli) {
 				Sniffer.count++;
 				if (cli.hasCount() && Sniffer.count > cli.getCount()) {
 					Sniffer.adapter.close();
@@ -133,7 +133,7 @@ public class Sniffer {
 		}, cli);
 	}
 	
-	private static Packet processEthernetPacket(CommandCLI cli, HexString hex) {
+	private static Packet processEthernetPacket(SnifferCLI cli, HexString hex) {
 		EthernetHeader header = EthernetHeader.parse(hex.substring(EthernetHeader.MAX_HEX).toBitString());
 		if (header == null) {
 			return null;
@@ -148,7 +148,7 @@ public class Sniffer {
 		return p != null ? new Packet(header, p) : null;
 	}
 	
-	private static Packet processIPPacket(CommandCLI cli, HexString hex) {
+	private static Packet processIPPacket(SnifferCLI cli, HexString hex) {
 		IPHeader header = IPHeader.parse(hex.substring(IPHeader.MAX_HEX).toBitString());
 		if (header == null) {
 			return null;
@@ -177,7 +177,7 @@ public class Sniffer {
 		return p != null ? new Packet(header, p) : null;
 	}
 	
-	private static Packet processARPPacket(CommandCLI cli, HexString hex) {
+	private static Packet processARPPacket(SnifferCLI cli, HexString hex) {
 		ARPHeader header = ARPHeader.parse(hex.substring(ARPHeader.MAX_HEX).toBitString());
 		if (header == null) {
 			return null;
@@ -190,7 +190,7 @@ public class Sniffer {
 		return p != null ? p : null;
 	}
 	
-	private static Packet processICMPPacket(CommandCLI cli, HexString hex) {
+	private static Packet processICMPPacket(SnifferCLI cli, HexString hex) {
 		ICMPHeader header = ICMPHeader.parse(hex.substring(ICMPHeader.MAX_HEX).toBitString());
 		if (header == null) {
 			return null;
@@ -199,7 +199,7 @@ public class Sniffer {
 		return Packet.build(hex, header);
 	}
 	
-	private static Packet processTCPPacket(CommandCLI cli, HexString hex) {
+	private static Packet processTCPPacket(SnifferCLI cli, HexString hex) {
 		TCPHeader header = TCPHeader.parse(hex.substring(TCPHeader.MAX_HEX).toBitString());
 		if (header == null) {
 			return null;
@@ -214,7 +214,7 @@ public class Sniffer {
 		return Packet.build(hex, header);
 	}
 	
-	private static Packet processUDPPacket(CommandCLI cli, HexString hex) {
+	private static Packet processUDPPacket(SnifferCLI cli, HexString hex) {
 		UDPHeader header = UDPHeader.parse(hex.substring(UDPHeader.MAX_HEX).toBitString());
 		if (header == null) {
 			return null;
@@ -229,11 +229,11 @@ public class Sniffer {
 		return Packet.build(hex, header);
 	}
 	
-	private static void sniffHeaderInfo(Packet p, CommandCLI cli) throws IOException {
+	private static void sniffHeaderInfo(Packet p, SnifferCLI cli) throws IOException {
 		Sniffer.log(cli,  p, true);
 	}
 	
-	private static void sniffHeaderInfo(Packet p, String type, CommandCLI cli) throws IOException {
+	private static void sniffHeaderInfo(Packet p, String type, SnifferCLI cli) throws IOException {
 		while (p != null && ! p.getType().equals(type)) {
 			p = p.getNext();
 		}
@@ -299,11 +299,11 @@ public class Sniffer {
 		return rep.append("\n").toString();
 	}
 	
-	private static void log(CommandCLI cli, Packet p) throws IOException {
+	private static void log(SnifferCLI cli, Packet p) throws IOException {
 		Sniffer.log(cli, p, false);
 	}
 	
-	private static void log(CommandCLI cli, Packet p, boolean headerOnly) throws IOException {
+	private static void log(SnifferCLI cli, Packet p, boolean headerOnly) throws IOException {
 		if (headerOnly) {
 			if (cli.hasOutput()) {
 				HexString hex = p.getHeader().toHexString();
@@ -332,7 +332,7 @@ public class Sniffer {
 		}
 	}
 	
-	private static void log(CommandCLI cli, Header h) throws IOException {
+	private static void log(SnifferCLI cli, Header h) throws IOException {
 		if (cli.hasOutput()) {
 			FileWriter writer = new FileWriter(cli.getOutput(), true);
 			writer.append(Sniffer.formatHexString(h.toHexString()));

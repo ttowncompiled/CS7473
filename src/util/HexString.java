@@ -52,6 +52,20 @@ public class HexString implements Showable {
 		return this.spaced;
 	}
 	
+	public byte[] toBytes() {
+		if (this.S.isEmpty()) {
+			return null;
+		}
+		byte[] bytes = new byte[(this.S.length()+1)/2];
+		for (int i = 0; i < this.S.length(); i+=2) {
+			bytes[i/2] = this.substring(i, i+2).toBitString().toByte();
+		}
+		if (this.S.length() % 2 == 1) {
+			bytes[bytes.length-1] = this.substring(this.S.length()-1, this.S.length()).toBitString().toByte();
+		}
+		return bytes;
+	}
+	
 	private static String convert(char c) {
 		switch(c) {
 			case '0':
