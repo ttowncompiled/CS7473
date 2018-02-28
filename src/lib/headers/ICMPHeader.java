@@ -6,6 +6,7 @@ import util.HexString;
 
 public class ICMPHeader extends Header {
 	
+	public static final int MIN_BITS = 32;
 	public static final int MAX_BITS = 32;
 	public static final int MAX_HEX = ICMPHeader.MAX_BITS/4;
 
@@ -14,6 +15,9 @@ public class ICMPHeader extends Header {
 	private short checksum;
 	
 	public static ICMPHeader parse(BitString packet) {
+		if (packet.length() < ICMPHeader.MIN_BITS) {
+			return null;
+		}
 		byte ICMPtype = packet.substring(0, 8).toByte();
 		byte code = packet.substring(8, 16).toByte();
 		short checksum = packet.substring(16, 32).toShort();

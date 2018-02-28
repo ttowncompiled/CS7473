@@ -35,6 +35,17 @@ public class BitString implements Showable {
 		return new BitString(rep.toString());
 	}
 	
+	public static BitString fromBytes(byte[] b) {
+		if (b == null || b.length == 0) {
+			return new BitString("");
+		}
+		BitString bits = BitString.fromByte(b[0]);
+		for (int i = 1; i < b.length; i++) {
+			bits = bits.concat(BitString.fromByte(b[i]));
+		}
+		return bits;
+	}
+	
 	public static BitString fromShort(short s) {
 		return BitString.fromShort(s, 16);
 	}

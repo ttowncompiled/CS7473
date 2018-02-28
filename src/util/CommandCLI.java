@@ -16,7 +16,9 @@ public class CommandCLI {
 	public static final String SANDD = "sandd";
 	public static final String SPORT = "sport";
 	public static final String DPORT = "dport";
+	public static final String DEV = "dev";
 	public static final String HELP = "help";
+	public static final String SHOW = "show";
 	
 	private String name;
 	private Options options;
@@ -26,18 +28,20 @@ public class CommandCLI {
 	public CommandCLI(String name, String[] args) throws ParseException {
 		this.name = name;
 		this.options = new Options();
-		this.options.addOption(OptionBuilder.hasArgs(1).withArgName("count").withDescription("Exit after receiving count packets.").create(CommandCLI.COUNT));
-		this.options.addOption(OptionBuilder.hasArgs(1).withArgName("filename").withDescription("Read packets from file. Program reads packets from the network by default.").create(CommandCLI.INPUT));
-		this.options.addOption(OptionBuilder.hasArgs(1).withArgName("filename").withDescription("Save output to filename.").create(CommandCLI.OUTPUT));
-		this.options.addOption(OptionBuilder.hasArgs(1).withArgName("type").withDescription("Print only packets of the specified type where type is one of: ['eth', 'arp', 'ip', 'icmp', 'tcp', 'udp'].").create(CommandCLI.TYPE));
+		this.options.addOption(OptionBuilder.hasArg().withArgName("count").withDescription("Exit after receiving count packets.").create(CommandCLI.COUNT));
+		this.options.addOption(OptionBuilder.hasArg().withArgName("filename").withDescription("Read packets from file. Program reads packets from the network by default.").create(CommandCLI.INPUT));
+		this.options.addOption(OptionBuilder.hasArg().withArgName("filename").withDescription("Save output to filename.").create(CommandCLI.OUTPUT));
+		this.options.addOption(OptionBuilder.hasArg().withArgName("type").withDescription("Print only packets of the specified type where type is one of: ['eth', 'arp', 'ip', 'icmp', 'tcp', 'udp'].").create(CommandCLI.TYPE));
 		this.options.addOption(OptionBuilder.withDescription("Print header info only as specified by -t.").create(CommandCLI.HEADER_INFO));
-		this.options.addOption(OptionBuilder.hasArgs(1).withArgName("saddress").withDescription("Print only packets with source address equal to saddress.").create(CommandCLI.SRC));
-		this.options.addOption(OptionBuilder.hasArgs(1).withArgName("daddress").withDescription("Print only packets with destination address equal to daddress").create(CommandCLI.DEST));
+		this.options.addOption(OptionBuilder.hasArg().withArgName("saddress").withDescription("Print only packets with source address equal to saddress.").create(CommandCLI.SRC));
+		this.options.addOption(OptionBuilder.hasArg().withArgName("daddress").withDescription("Print only packets with destination address equal to daddress").create(CommandCLI.DEST));
 		this.options.addOption(OptionBuilder.hasArgs(2).withArgName("saddress daddress").withValueSeparator(' ').withDescription("Print only packets where the source address matches saddress or the destination address matches daddress.").create(CommandCLI.SORD));
 		this.options.addOption(OptionBuilder.hasArgs(2).withArgName("saddress daddress").withValueSeparator(' ').withDescription("Print only packets where the source address mathces saddress and the destination address matches daddress.").create(CommandCLI.SANDD));
 		this.options.addOption(OptionBuilder.hasArgs(2).withArgName("port1 port2").withValueSeparator(' ').withDescription("Print only packets where the source port is in the range port1-port2.").create(CommandCLI.SPORT));
 		this.options.addOption(OptionBuilder.hasArgs(2).withArgName("port1 port2").withValueSeparator(' ').withDescription("Print only packets where the destination port is in the range port1-port2.").create(CommandCLI.DPORT));
+		this.options.addOption(OptionBuilder.hasArg().withArgName("name").withDescription("The name of the network adapter to sniff. Otherwise, a network adapter is chosen by default.").create(CommandCLI.DEV));
 		this.options.addOption(OptionBuilder.withDescription("Prints usage information.").create(CommandCLI.HELP));
+		this.options.addOption(OptionBuilder.withDescription("Prints available network adapters.").create(CommandCLI.SHOW));
 		this.cmd = this.parse(args);
 	}
 	
@@ -194,8 +198,20 @@ public class CommandCLI {
 		return Integer.parseInt(dports[1]);
 	}
 	
+	public boolean hasDev() {
+		return this.cmd.hasOption(CommandCLI.DEV);
+	}
+	
+	public String getDev() {
+		return this.cmd.getOptionValue(CommandCLI.DEV);
+	}
+	
 	public boolean hasHelp() {
 		return this.cmd.hasOption(CommandCLI.HELP);
+	}
+	
+	public boolean hasShow() {
+		return this.cmd.hasOption(CommandCLI.SHOW);
 	}
 	
 	public void help() {

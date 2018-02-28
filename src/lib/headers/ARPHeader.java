@@ -6,6 +6,7 @@ import util.HexString;
 
 public class ARPHeader extends Header {
 	
+	public static final int MIN_BITS = 224;
 	public static final int MAX_BITS = 224;
 	public static final int MAX_HEX = ARPHeader.MAX_BITS/4;
 
@@ -20,6 +21,9 @@ public class ARPHeader extends Header {
 	private int targetProtocolAddress;
 	
 	public static ARPHeader parse(BitString packet) {
+		if (packet.length() < ARPHeader.MIN_BITS) {
+			return null;
+		}
 		short HTYPE = packet.substring(0, 16).toShort();
 		short PTYPE = packet.substring(16, 32).toShort();
 		byte HLEN = packet.substring(32, 40).toByte();

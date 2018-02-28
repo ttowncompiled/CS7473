@@ -5,6 +5,7 @@ import util.HexString;
 
 public class NullHeader extends Header {
 	
+	public static final int MIN_BITS = 0;
 	public static final int MAX_BITS = 0;
 	public static final int MAX_HEX = 0;
 	

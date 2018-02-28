@@ -6,6 +6,7 @@ import util.HexString;
 
 public class IPHeader extends Header {
 	
+	public static final int MIN_BITS = 160;
 	public static final int MAX_BITS = 480;
 	public static final int MAX_HEX = IPHeader.MAX_BITS/4;
 	
@@ -24,6 +25,9 @@ public class IPHeader extends Header {
 	private int[] optionsPadding;
 	
 	public static IPHeader parse(BitString packet) {
+		if (packet.length() < IPHeader.MIN_BITS) {
+			return null;
+		}
 		byte version = packet.substring(0, 4).toByte();
 		byte IHL = packet.substring(4, 8).toByte();
 		byte typeOfService = packet.substring(8, 16).toByte();

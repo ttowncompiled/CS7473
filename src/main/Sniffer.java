@@ -1,8 +1,16 @@
+package main;
+
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import org.apache.commons.cli.ParseException;
+import org.jnetpcap.Pcap;
+import org.jnetpcap.PcapIf;
+import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.packet.PcapPacketHandler;
 
 import lib.headers.ARPHeader;
 import lib.headers.EthernetHeader;
@@ -17,11 +25,15 @@ import util.*;
 public class Sniffer {
 	
 	public static final String NAME = "Sniffer";
+	public static Pcap adapter = null;
+	public static int count = 0;
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
 		CommandCLI cli = new CommandCLI(Sniffer.NAME, args);
 		if (cli.hasHelp()) {
 			Sniffer.help(cli);
+		} else if (cli.hasShow()) {
+			Sniffer.show();
 		} else if (cli.hasInput()) {
 			Sniffer.sniffFile(cli);
 		} else {
@@ -31,6 +43,18 @@ public class Sniffer {
 	
 	private static void help(CommandCLI cli) {
 		cli.help();
+	}
+	
+	private static void show() {
+		ArrayList<PcapIf> devices = new ArrayList<>();
+		StringBuilder errBuf = new StringBuilder();
+		int result = Pcap.findAllDevs(devices, errBuf);
+		if (result == Pcap.ERROR || devices.isEmpty()) {
+			return;
+		}
+		for (int i = 0; i < devices.size(); i++) {
+			Sniffer.log(devices.get(i).getName(), devices.get(i).toString());
+		}
 	}
 	
 	private static void sniffFile(CommandCLI cli) throws FileNotFoundException, IOException {
@@ -61,8 +85,59 @@ public class Sniffer {
 		}
 	}
 	
+	private static void sniffNetwork(CommandCLI cli) throws IOException {
+		if (cli.hasDev()) {
+			Sniffer.adapter = Sniffer.openAdapter(cli.getDev());
+		} else {
+			Sniffer.adapter = Sniffer.openAdapter();
+		}
+		if (Sniffer.adapter == null) {
+			return;
+		}
+		if (cli.hasOutput()) {
+			FileWriter writer = new FileWriter(cli.getOutput(), false);
+			writer.append("");
+			writer.close();
+		}
+		Sniffer.adapter.loop(Pcap.LOOP_INFINITE, new PcapPacketHandler<CommandCLI>() {
+			public void nextPacket(PcapPacket packet, CommandCLI cli) {
+				Sniffer.count++;
+				if (cli.hasCount() && Sniffer.count > cli.getCount()) {
+					Sniffer.adapter.close();
+					System.exit(0);
+				}
+				ByteBuffer bbuff = ByteBuffer.allocate(packet.size());
+				packet.transferTo(bbuff);
+				HexString hex = BitString.fromBytes(bbuff.array()).toHexString();
+				Packet p = null;
+				try {
+					if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
+						p = Sniffer.processEthernetPacket(cli, hex);
+					}
+					if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
+						return;
+					}
+					if (cli.hasHeaderInfo() && ! cli.hasType()) {
+						Sniffer.sniffHeaderInfo(p, cli);
+					}
+					if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
+						Sniffer.sniffHeaderInfo(p, cli.getType(), cli);
+					}
+					if (! cli.hasHeaderInfo()) {
+						Sniffer.log(cli, p);
+					}
+				} catch (IOException e) {
+					Sniffer.adapter.close();
+				}
+			}
+		}, cli);
+	}
+	
 	private static Packet processEthernetPacket(CommandCLI cli, HexString hex) {
 		EthernetHeader header = EthernetHeader.parse(hex.substring(EthernetHeader.MAX_HEX).toBitString());
+		if (header == null) {
+			return null;
+		}
 		hex = hex.remove(header.getHeaderHexLength());
 		Packet p = null;
 		if (header.getEtherType() == Config.ETH_IP_ETHERTYPE) {
@@ -75,6 +150,9 @@ public class Sniffer {
 	
 	private static Packet processIPPacket(CommandCLI cli, HexString hex) {
 		IPHeader header = IPHeader.parse(hex.substring(IPHeader.MAX_HEX).toBitString());
+		if (header == null) {
+			return null;
+		}
 		hex = hex.remove(header.getHeaderHexLength());
 		if (! cli.hasSourceOrDest() && (cli.hasSource() && cli.hasValidSource() && header.getSourceIPAddress() != cli.getSource() || cli.hasSourceAndDest() && cli.hasValidSourceAndDest() && header.getSourceIPAddress() != cli.getSourceAndDest()[0])) {
 			return null;
@@ -101,6 +179,9 @@ public class Sniffer {
 	
 	private static Packet processARPPacket(CommandCLI cli, HexString hex) {
 		ARPHeader header = ARPHeader.parse(hex.substring(ARPHeader.MAX_HEX).toBitString());
+		if (header == null) {
+			return null;
+		}
 		hex = hex.remove(header.getHeaderHexLength());
 		Packet p = null;
 		if (header.getProtocolType() == Config.ETH_IP_ETHERTYPE) {
@@ -111,12 +192,18 @@ public class Sniffer {
 	
 	private static Packet processICMPPacket(CommandCLI cli, HexString hex) {
 		ICMPHeader header = ICMPHeader.parse(hex.substring(ICMPHeader.MAX_HEX).toBitString());
+		if (header == null) {
+			return null;
+		}
 		hex = hex.remove(header.getHeaderHexLength());
 		return Packet.build(hex, header);
 	}
 	
 	private static Packet processTCPPacket(CommandCLI cli, HexString hex) {
 		TCPHeader header = TCPHeader.parse(hex.substring(TCPHeader.MAX_HEX).toBitString());
+		if (header == null) {
+			return null;
+		}
 		hex = hex.remove(header.getHeaderHexLength());
 		if (cli.hasSourcePort() && ! (cli.getSourcePortStart() <= header.getSourcePortAddress() && header.getSourcePortAddress() <= cli.getSourcePortEnd())) {
 			return null;
@@ -129,6 +216,9 @@ public class Sniffer {
 	
 	private static Packet processUDPPacket(CommandCLI cli, HexString hex) {
 		UDPHeader header = UDPHeader.parse(hex.substring(UDPHeader.MAX_HEX).toBitString());
+		if (header == null) {
+			return null;
+		}
 		hex = hex.remove(header.getHeaderHexLength());
 		if (cli.hasSourcePort() && ! (cli.getSourcePortStart() <= header.getSourcePortAddress() && header.getSourcePortAddress() <= cli.getSourcePortEnd())) {
 			return null;
@@ -162,10 +252,6 @@ public class Sniffer {
 		return false;
 	}
 	
-	private static void sniffNetwork(CommandCLI cli) {
-		
-	}
-	
 	private static boolean isEthernetPacket(HexString hex) {
 		EthernetHeader header = EthernetHeader.parse(hex.substring(EthernetHeader.MAX_HEX).toBitString());
 		return Sniffer.isEthernetEtherType(header.getEtherType());
@@ -173,6 +259,36 @@ public class Sniffer {
 	
 	private static boolean isEthernetEtherType(int etherType) {
 		return etherType == Config.ETH_ARP_ETHERTYPE || etherType == Config.ETH_IP_ETHERTYPE;
+	}
+	
+	private static Pcap openAdapter() throws IOException {
+		return Sniffer.openAdapter(null);
+	}
+	
+	private static Pcap openAdapter(String name) throws IOException {
+		PcapIf device = Sniffer.getNetworkDevice(name);
+		if (device == null) {
+			return null;
+		}
+		return Pcap.openLive(device.getName(), Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, Pcap.DEFAULT_TIMEOUT, new StringBuilder());
+	}
+	
+	private static PcapIf getNetworkDevice(String name) throws IOException {
+		ArrayList<PcapIf> devices = new ArrayList<>();
+		StringBuilder errBuf = new StringBuilder();
+		int result = Pcap.findAllDevs(devices, errBuf);
+		if (result == Pcap.ERROR || devices.isEmpty()) {
+			return null;
+		}
+		if (name == null) {
+			return devices.get(0);
+		}
+		for (int i = 0; i < devices.size(); i++) {
+			if (devices.get(i).getName().equals(name)) {
+				return devices.get(i);
+			}
+		}
+		return null;
 	}
 	
 	private static String formatHexString(HexString hex) {
@@ -223,6 +339,12 @@ public class Sniffer {
 			writer.close();
 		} else {
 			System.out.println(h);
+		}
+	}
+	
+	private static void log(String... S) {
+		for (int i = 0; i < S.length; i++) {
+			System.out.println(S[i]);
 		}
 	}
 }

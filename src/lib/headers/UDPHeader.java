@@ -6,6 +6,7 @@ import util.HexString;
 
 public class UDPHeader extends Header {
 	
+	public static final int MIN_BITS = 64;
 	public static final int MAX_BITS = 64;
 	public static final int MAX_HEX = UDPHeader.MAX_BITS/4;
 
@@ -15,6 +16,9 @@ public class UDPHeader extends Header {
 	private short checksum;
 	
 	public static UDPHeader parse(BitString packet) {
+		if (packet.length() < UDPHeader.MIN_BITS) {
+			return null;
+		}
 		short source = packet.substring(0, 16).toShort();
 		short dest = packet.substring(16, 32).toShort();
 		short length = packet.substring(32, 48).toShort();

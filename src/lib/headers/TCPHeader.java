@@ -6,6 +6,7 @@ import util.HexString;
 
 public class TCPHeader extends Header {
 	
+	public static final int MIN_BITS = 160;
 	public static final int MAX_BITS = 480;
 	public static final int MAX_HEX = TCPHeader.MAX_BITS/4;
 	
@@ -22,6 +23,9 @@ public class TCPHeader extends Header {
 	private int[] optionsPadding;
 	
 	public static TCPHeader parse(BitString packet) {
+		if (packet.length() < TCPHeader.MIN_BITS) {
+			return null;
+		}
 		short source = packet.substring(0, 16).toShort();
 		short dest = packet.substring(16, 32).toShort();
 		int sequence = packet.substring(32, 64).toInt();

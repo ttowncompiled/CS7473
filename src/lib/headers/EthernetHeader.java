@@ -6,6 +6,7 @@ import util.HexString;
 
 public class EthernetHeader extends Header {
 	
+	public static final int MIN_BITS = 112;
 	public static final int MAX_BITS = 112;
 	public static final int MAX_HEX = EthernetHeader.MAX_BITS/4;
 
@@ -14,6 +15,9 @@ public class EthernetHeader extends Header {
 	private short etherType;
 	
 	public static EthernetHeader parse(BitString packet) {
+		if (packet.length() < EthernetHeader.MIN_BITS) {
+			return null;
+		}
 		long destination = packet.substring(0, 48).toLong();
 		long source = packet.substring(48, 96).toLong();
 		short etherType = packet.substring(96, 112).toShort();
