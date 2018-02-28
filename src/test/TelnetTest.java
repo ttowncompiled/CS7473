@@ -6,6 +6,7 @@ import lib.headers.EthernetHeader;
 import lib.headers.IPHeader;
 import lib.headers.TCPHeader;
 import lib.packets.Packet;
+import util.BitString;
 import util.Config;
 import util.HexFile;
 import util.HexString;

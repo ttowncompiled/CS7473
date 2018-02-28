@@ -107,11 +107,31 @@ public class SnifferCLI {
 	}
 	
 	public boolean hasValidSource() {
-		return StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.SRC));
+		if (StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.SRC))) {
+			return true;
+		}
+		String[] address = this.cmd.getOptionValue(SnifferCLI.SRC).split("\\.");
+		if (address.length != 4) {
+			return false;
+		}
+		for (int i = 0; i < address.length; i++) {
+			if (! StringUtils.isNumeric(address[i])) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public int getSource() {
-		return (int) Long.parseLong(this.cmd.getOptionValue(SnifferCLI.SRC));
+		if (StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.SRC))) {
+			return (int) Long.parseLong(this.cmd.getOptionValue(SnifferCLI.SRC));
+		}
+		String[] address = this.cmd.getOptionValue(SnifferCLI.SRC).split("\\.");
+		BitString bits = BitString.fromByte((byte) Integer.parseInt(address[0]));
+		for (int i = 1; i < address.length; i++) {
+			bits = bits.concat(BitString.fromByte((byte) Integer.parseInt(address[i])));
+		}
+		return bits.toInt();
 	}
 	
 	public boolean hasDest() {
@@ -119,11 +139,31 @@ public class SnifferCLI {
 	}
 	
 	public boolean hasValidDest() {
-		return StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.DEST));
+		if (StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.DEST))) {
+			return true;
+		}
+		String[] address = this.cmd.getOptionValue(SnifferCLI.DEST).split("\\.");
+		if (address.length != 4) {
+			return false;
+		}
+		for (int i = 0; i < address.length; i++) {
+			if (! StringUtils.isNumeric(address[i])) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public int getDest() {
-		return (int) Long.parseLong(this.cmd.getOptionValue(SnifferCLI.DEST));
+		if (StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.SRC))) {
+			return (int) Long.parseLong(this.cmd.getOptionValue(SnifferCLI.DEST));
+		}
+		String[] address = this.cmd.getOptionValue(SnifferCLI.DEST).split("\\.");
+		BitString bits = BitString.fromByte(Byte.parseByte(address[0]));
+		for (int i = 1; i < address.length; i++) {
+			bits = bits.concat(BitString.fromByte(Byte.parseByte(address[1])));
+		}
+		return bits.toInt();
 	}
 	
 	public boolean hasSourceOrDest() {
