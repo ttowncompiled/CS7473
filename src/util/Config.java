@@ -17,8 +17,8 @@ public class Config {
 	public static final int IP_TCP_PROTOCOL = 6;
 	public static final int IP_UDP_PROTOCOL = 17;
 	
-	public static final String FTP_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\lib\\ftp.dat";
-	public static final String HTTP_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\lib\\http.dat";
-	public static final String PING_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\lib\\ping.dat";
-	public static final String TELNET_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\lib\\telnet.dat";
+	public static final String FTP_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\ftp.dat";
+	public static final String HTTP_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\http.dat";
+	public static final String PING_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\ping.dat";
+	public static final String TELNET_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\telnet.dat";
 }
