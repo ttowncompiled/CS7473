@@ -8,6 +8,8 @@ public class SnifferCLI {
 	public static final String COUNT = "c";
 	public static final String INPUT = "r";
 	public static final String OUTPUT = "o";
+	public static final String HUMAN = "human";
+	public static final String HEX = "hex";
 	public static final String TYPE = "t";
 	public static final String HEADER_INFO = "h";
 	public static final String SRC = "src";
@@ -31,6 +33,8 @@ public class SnifferCLI {
 		this.options.addOption(OptionBuilder.hasArg().withArgName("count").withDescription("Exit after receiving count packets.").create(SnifferCLI.COUNT));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("filename").withDescription("Read packets from file. Program reads packets from the network by default.").create(SnifferCLI.INPUT));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("filename").withDescription("Save output to filename.").create(SnifferCLI.OUTPUT));
+		this.options.addOption(OptionBuilder.withDescription("Writes output in human readable format. Default for output to console.").create(SnifferCLI.HUMAN));
+		this.options.addOption(OptionBuilder.withDescription("Writes output in hex notation. Default for output to file.").create(SnifferCLI.HEX));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("type").withDescription("Print only packets of the specified type where type is one of: ['eth', 'arp', 'ip', 'icmp', 'tcp', 'udp'].").create(SnifferCLI.TYPE));
 		this.options.addOption(OptionBuilder.withDescription("Print header info only as specified by -t.").create(SnifferCLI.HEADER_INFO));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("saddress").withDescription("Print only packets with source address equal to saddress.").create(SnifferCLI.SRC));
@@ -71,6 +75,14 @@ public class SnifferCLI {
 	
 	public String getOutput() {
 		return this.cmd.getOptionValue(SnifferCLI.OUTPUT);
+	}
+	
+	public boolean hasHuman() {
+		return this.cmd.hasOption(SnifferCLI.HUMAN);
+	}
+	
+	public boolean hasHex() {
+		return this.cmd.hasOption(SnifferCLI.HEX);
 	}
 	
 	public boolean hasType() {

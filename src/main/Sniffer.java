@@ -33,7 +33,7 @@ public class Sniffer {
 		if (cli.hasHelp()) {
 			Sniffer.help(cli);
 		} else if (cli.hasShow()) {
-			Sniffer.show();
+			Sniffer.show(cli);
 		} else if (cli.hasInput()) {
 			Sniffer.sniffFile(cli);
 		} else {
@@ -45,7 +45,7 @@ public class Sniffer {
 		cli.help();
 	}
 	
-	private static void show() {
+	private static void show(SnifferCLI cli) throws IOException {
 		ArrayList<PcapIf> devices = new ArrayList<>();
 		StringBuilder errBuf = new StringBuilder();
 		int result = Pcap.findAllDevs(devices, errBuf);
@@ -53,7 +53,7 @@ public class Sniffer {
 			return;
 		}
 		for (int i = 0; i < devices.size(); i++) {
-			Sniffer.log(devices.get(i).getName(), devices.get(i).toString());
+			Sniffer.log(cli, devices.get(i).getName(), devices.get(i).toString());
 		}
 	}
 	
@@ -305,46 +305,61 @@ public class Sniffer {
 	
 	private static void log(SnifferCLI cli, Packet p, boolean headerOnly) throws IOException {
 		if (headerOnly) {
-			if (cli.hasOutput()) {
+			if ((cli.hasOutput() && ! cli.hasHuman()) || cli.hasHex()) {
 				HexString hex = p.getHeader().toHexString();
 				p = p.getNext();
 				while (p != null) {
 					hex = hex.concat(p.getHeader().toHexString());
 					p = p.getNext();
 				}
-				FileWriter writer = new FileWriter(cli.getOutput(), true);
-				writer.append(Sniffer.formatHexString(hex));
-				writer.close();
+				Sniffer.log(cli, hex);
 			} else {
 				while (p != null) {
-					System.out.println(p.getHeader());
+					Sniffer.log(cli, p.getHeader());
 					p = p.getNext();
 				}
 			}
 		} else {
-			if (cli.hasOutput()) {
-				FileWriter writer = new FileWriter(cli.getOutput(), true);
-				writer.append(Sniffer.formatHexString(p.toHexString()));
-				writer.close();
+			if ((cli.hasOutput() && ! cli.hasHuman()) || cli.hasHex()) {
+				Sniffer.log(cli, p.toHexString());
 			} else {
-				System.out.println(p);
+				Sniffer.log(cli, p.toString(), p.extractPlaintext());
 			}
 		}
 	}
 	
 	private static void log(SnifferCLI cli, Header h) throws IOException {
-		if (cli.hasOutput()) {
-			FileWriter writer = new FileWriter(cli.getOutput(), true);
-			writer.append(Sniffer.formatHexString(h.toHexString()));
-			writer.close();
+		if ((cli.hasOutput() && ! cli.hasHuman()) || cli.hasHex()) {
+			Sniffer.log(cli, h.toHexString());
 		} else {
-			System.out.println(h);
+			Sniffer.log(cli, h.toString());
 		}
 	}
 	
-	private static void log(String... S) {
-		for (int i = 0; i < S.length; i++) {
-			System.out.println(S[i]);
+	private static void log(SnifferCLI cli, HexString hex) throws IOException {
+		if (cli.hasOutput()) {
+			FileWriter writer = new FileWriter(cli.getOutput(), true);
+			writer.append(Sniffer.formatHexString(hex));
+			writer.close();
+		} else {
+			System.out.println(Sniffer.formatHexString(hex));
+		}
+	}
+	
+	private static void log(SnifferCLI cli, String... S) throws IOException {
+		if (cli.hasOutput()) {
+			FileWriter writer = new FileWriter(cli.getOutput(), true);
+			for (int i = 0; i < S.length; i++) {
+				writer.append(S[i]);
+				writer.append("\n");
+			}
+			writer.append("\n");
+			writer.close();
+		} else {
+			for (int i = 0; i < S.length; i++) {
+				System.out.println(S[i]);
+			}
+			System.out.println("");
 		}
 	}
 }

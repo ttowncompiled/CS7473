@@ -43,6 +43,13 @@ public class Packet implements Showable {
 		return this.header.toHexString().concat(this.next.toHexString());
 	}
 	
+	public String extractPlaintext() {
+		if (this.next != null) {
+			return this.next.extractPlaintext();
+		}
+		return "";
+	}
+	
 	@Override
 	public String toString() {
 		if (this.next == null) {

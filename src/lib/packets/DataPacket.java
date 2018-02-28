@@ -21,6 +21,11 @@ public class DataPacket extends Packet {
 		return this.data;
 	}
 	
+	@Override
+	public String extractPlaintext() {
+		return this.data.toBitString().toPlaintext();
+	}
+	
 	private static String separator() {
 		StringBuilder rep = new StringBuilder();
 		

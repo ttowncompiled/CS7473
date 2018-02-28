@@ -165,6 +165,17 @@ public class BitString implements Showable {
 		return (byte) this.toLong(8);
 	}
 	
+	public byte[] toBytes() {
+		if (this.S.length() % 8 > 0) {
+			return null;
+		}
+		byte[] bytes = new byte[this.S.length()/8];
+		for (int i = 0; i < this.S.length(); i+=8) {
+			bytes[i/8] = this.substring(i, i+8).toByte();
+		}
+		return bytes;
+	}
+	
 	public short toShort() {
 		return (short) this.toLong(16);
 	}
@@ -175,6 +186,25 @@ public class BitString implements Showable {
 	
 	public long toLong() {
 		return this.toLong(64);
+	}
+	
+	public String toPlaintext() {
+		byte[] bytes = this.toBytes();
+		if (bytes == null || bytes.length == 0) {
+			return null;
+		}
+		StringBuilder rep = new StringBuilder();
+		for (int i = 0; i < bytes.length; i++) {
+			char c = (char) bytes[i];
+			if (c == '\\') {
+				rep.append('\\');
+			} else if (c == ' '){
+				rep.append("\\_");
+			} else {
+				rep.append(c);
+			}
+		}
+		return rep.toString();
 	}
 	
 	private static String convert(String s) {

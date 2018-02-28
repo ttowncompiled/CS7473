@@ -22,7 +22,9 @@ public class TelnetTest {
 			hex = hex.remove(ip.getHeaderHexLength());
 			TCPHeader tcp = TCPHeader.parse(hex.substring(TCPHeader.MAX_HEX).toBitString());
 			hex = hex.remove(tcp.getHeaderHexLength());
-			Packet.build(hex, eth, ip, tcp).show();
+			Packet p = Packet.build(hex, eth, ip, tcp);
+			p.show();
+			System.out.println(p.extractPlaintext());
 		}
 	}
 }
