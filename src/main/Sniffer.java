@@ -25,8 +25,8 @@ import util.*;
 public class Sniffer {
 	
 	public static final String NAME = "Sniffer";
-	public static Pcap adapter = null;
-	public static int count = 0;
+	private static Pcap adapter = null;
+	private static int count = 0;
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
 		SnifferCLI cli = new SnifferCLI(Sniffer.NAME, args);

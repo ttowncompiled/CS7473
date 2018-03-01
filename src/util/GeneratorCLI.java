@@ -6,9 +6,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 
 public class GeneratorCLI {
 	
+	public static final String COUNT = "c";
 	public static final String INPUT = "r";
 	public static final String DEV = "dev";
 	public static final String HELP = "help";
@@ -22,6 +24,7 @@ public class GeneratorCLI {
 	public GeneratorCLI(String name, String[] args) throws ParseException {
 		this.name = name;
 		this.options = new Options();
+		this.options.addOption(OptionBuilder.hasArg().withArgName("count").withDescription("Exit after sending count packets.").create(SnifferCLI.COUNT));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("filename").withDescription("Read packets from file. Program reads packets from the network by default.").isRequired().create(GeneratorCLI.INPUT));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("name").withDescription("The name of the network adapter to sniff. Otherwise, a network adapter is chosen by default.").create(GeneratorCLI.DEV));
 		this.options.addOption(OptionBuilder.withDescription("Prints usage information.").create(GeneratorCLI.HELP));
@@ -31,6 +34,14 @@ public class GeneratorCLI {
 	
 	private CommandLine parse(String[] args) throws ParseException {
 		return new DefaultParser().parse(this.options, args);
+	}
+	
+	public boolean hasCount() {
+		return this.cmd.hasOption(SnifferCLI.COUNT);
+	}
+	
+	public int getCount() {
+		return StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.COUNT)) ? Integer.parseInt(this.cmd.getOptionValue(SnifferCLI.COUNT)) : 0;
 	}
 	
 	public boolean hasInput() {

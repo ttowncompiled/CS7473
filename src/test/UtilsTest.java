@@ -5,9 +5,9 @@ import util.Utils;
 
 public class UtilsTest {
 	
-	public static final String ADDR_1 = "192.168.1.65";
-	public static final String ADDR_2 = "192.168.1.34";
-	public static final String ADDR_3 = "192.168.1.200";
+	public static final String ADDR_1 = "192.168.1.200";
+	public static final String ADDR_2 = "192.168.1.203";
+	public static final String ADDR_3 = "192.168.1.34";
 
 	public static void main(String[] args) {
 		UtilsTest.convertTest();

@@ -27,11 +27,11 @@ public class HexFile {
 				rep.append(line);
 				continue;
 			}
-			if (rep.toString().length() == 0) {
-				continue;
-			}
 			packets.add(HexFile.convert(rep.toString()));
 			rep = new StringBuilder();
+		}
+		if (rep.toString().length() > 0) {
+			packets.add(HexFile.convert(rep.toString()));
 		}
 		scanner.close();
 		if (packets.isEmpty()) {

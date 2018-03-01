@@ -15,7 +15,7 @@ import util.HexString;
 public class Generator {
 
 	public static final String NAME = "Generator";
-	public static Pcap adapter = null;
+	private static Pcap adapter = null;
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
 		GeneratorCLI cli = new GeneratorCLI(Generator.NAME, args);
@@ -36,8 +36,16 @@ public class Generator {
 			return;
 		}
 		HexString[] hexes = HexFile.parse(cli.getInput());
-		for (int i = 0; i < hexes.length; i++) {
-			Generator.send(Generator.adapter, hexes[i]);
+		if (cli.hasCount()) {
+			for (int i = 0; i < cli.getCount(); i++) {
+				for (int j = 0; j < hexes.length; j++) {
+					Generator.send(cli, Generator.adapter, hexes[j]);
+				}
+			}
+		} else {
+			for (int i = 0; i < hexes.length; i++) {
+				Generator.send(cli, Generator.adapter, hexes[i]);
+			}
 		}
 	}
 	
@@ -57,17 +65,12 @@ public class Generator {
 		}
 	}
 	
-	private static void send(Pcap adapter, HexString hex) {
+	private static void send(GeneratorCLI cli, Pcap adapter, HexString hex) {
 		byte[] bytes = hex.toBytes();
-		System.out.println(hex.spaced().toString());
-		System.out.println(hex.length());
-		System.out.println(bytes.length);
-		/*
 		int result = adapter.sendPacket(bytes);
-		if (result == Pcap.ERROR) {
-			
+		if (result != Pcap.ERROR) {
+			System.out.println(">>> Packet sent.");
 		}
-		*/
 	}
 	
 	private static Pcap openAdapter() throws IOException {
