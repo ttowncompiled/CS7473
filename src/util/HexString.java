@@ -66,6 +66,18 @@ public class HexString implements Showable {
 		return bytes;
 	}
 	
+	public String toMACAddress() {
+		if (this.S.length() % 2 > 0) {
+			return null;
+		}
+		StringBuilder rep = new StringBuilder();
+		rep.append(this.S.charAt(0)).append(this.S.charAt(1));
+		for (int i = 2; i < this.S.length(); i+=2) {
+			rep.append(":").append(this.S.charAt(i)).append(this.S.charAt(i+1));
+		}
+		return rep.toString();
+	}
+	
 	private static String convert(char c) {
 		switch(c) {
 			case '0':

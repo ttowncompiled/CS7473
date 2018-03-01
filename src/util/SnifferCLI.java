@@ -123,15 +123,7 @@ public class SnifferCLI {
 	}
 	
 	public int getSource() {
-		if (StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.SRC))) {
-			return (int) Long.parseLong(this.cmd.getOptionValue(SnifferCLI.SRC));
-		}
-		String[] address = this.cmd.getOptionValue(SnifferCLI.SRC).split("\\.");
-		BitString bits = BitString.fromByte((byte) Integer.parseInt(address[0]));
-		for (int i = 1; i < address.length; i++) {
-			bits = bits.concat(BitString.fromByte((byte) Integer.parseInt(address[i])));
-		}
-		return bits.toInt();
+		return Utils.convertIPAddress(this.cmd.getOptionValue(SnifferCLI.SRC));
 	}
 	
 	public boolean hasDest() {
@@ -155,15 +147,7 @@ public class SnifferCLI {
 	}
 	
 	public int getDest() {
-		if (StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.SRC))) {
-			return (int) Long.parseLong(this.cmd.getOptionValue(SnifferCLI.DEST));
-		}
-		String[] address = this.cmd.getOptionValue(SnifferCLI.DEST).split("\\.");
-		BitString bits = BitString.fromByte(Byte.parseByte(address[0]));
-		for (int i = 1; i < address.length; i++) {
-			bits = bits.concat(BitString.fromByte(Byte.parseByte(address[1])));
-		}
-		return bits.toInt();
+		return Utils.convertIPAddress(this.cmd.getOptionValue(SnifferCLI.DEST));
 	}
 	
 	public boolean hasSourceOrDest() {
@@ -172,13 +156,26 @@ public class SnifferCLI {
 	
 	public boolean hasValidSourceOrDest() {
 		String[] sord = this.cmd.getOptionValues(SnifferCLI.SORD);
-		return StringUtils.isNumeric(sord[0]) && StringUtils.isNumeric(sord[1]);
+		if (StringUtils.isNumeric(sord[0]) && StringUtils.isNumeric(sord[1])) {
+			return true;
+		}
+		String[] addr0 = sord[0].split("\\.");
+		String[] addr1 = sord[1].split("\\.");
+		if (addr0.length != 4 || addr1.length != 4) {
+			return false;
+		}
+		for (int i = 0; i < addr0.length && i < addr1.length; i++) {
+			if (! StringUtils.isNumeric(addr0[i]) || ! StringUtils.isNumeric(addr1[i])) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public int[] getSourceOrDest() {
 		int[] sord = new int[2];
-		sord[0] = (int) Long.parseLong(this.cmd.getOptionValues(SnifferCLI.SORD)[0]);
-		sord[1] = (int) Long.parseLong(this.cmd.getOptionValues(SnifferCLI.SORD)[1]);
+		sord[0] = Utils.convertIPAddress(this.cmd.getOptionValues(SnifferCLI.SORD)[0]);
+		sord[1] = Utils.convertIPAddress(this.cmd.getOptionValues(SnifferCLI.SORD)[1]);
 		return sord;
 	}
 	
@@ -188,13 +185,26 @@ public class SnifferCLI {
 	
 	public boolean hasValidSourceAndDest() {
 		String[] sandd = this.cmd.getOptionValues(SnifferCLI.SANDD);
-		return StringUtils.isNumeric(sandd[0]) && StringUtils.isNumeric(sandd[1]);
+		if (StringUtils.isNumeric(sandd[0]) && StringUtils.isNumeric(sandd[1])) {
+			return true;
+		}
+		String[] addr0 = sandd[0].split("\\.");
+		String[] addr1 = sandd[1].split("\\.");
+		if (addr0.length != 4 || addr1.length != 4) {
+			return false;
+		}
+		for (int i = 0; i < addr0.length && i < addr1.length; i++) {
+			if (! StringUtils.isNumeric(addr0[i]) || ! StringUtils.isNumeric(addr1[i])) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public int[] getSourceAndDest() {
 		int[] sandd = new int[2];
-		sandd[0] = (int) Long.parseLong(this.cmd.getOptionValues(SnifferCLI.SANDD)[0]);
-		sandd[1] = (int) Long.parseLong(this.cmd.getOptionValues(SnifferCLI.SANDD)[1]);
+		sandd[0] = Utils.convertIPAddress(this.cmd.getOptionValues(SnifferCLI.SANDD)[0]);
+		sandd[1] = Utils.convertIPAddress(this.cmd.getOptionValues(SnifferCLI.SANDD)[1]);
 		return sandd;
 	}
 	

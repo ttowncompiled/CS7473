@@ -101,10 +101,9 @@ public class Sniffer {
 		}
 		Sniffer.adapter.loop(Pcap.LOOP_INFINITE, new PcapPacketHandler<SnifferCLI>() {
 			public void nextPacket(PcapPacket packet, SnifferCLI cli) {
-				Sniffer.count++;
+				System.out.println(">>> Packet received.");
 				if (cli.hasCount() && Sniffer.count > cli.getCount()) {
-					Sniffer.adapter.close();
-					System.exit(0);
+					return;
 				}
 				ByteBuffer bbuff = ByteBuffer.allocate(packet.size());
 				packet.transferTo(bbuff);
@@ -154,15 +153,15 @@ public class Sniffer {
 			return null;
 		}
 		hex = hex.remove(header.getHeaderHexLength());
-		if (! cli.hasSourceOrDest() && (cli.hasSource() && cli.hasValidSource() && header.getSourceIPAddress() != cli.getSource() || cli.hasSourceAndDest() && cli.hasValidSourceAndDest() && header.getSourceIPAddress() != cli.getSourceAndDest()[0])) {
+		if (! cli.hasSourceOrDest() && (cli.hasSource() && ! cli.hasValidSource() || cli.hasSourceAndDest() && ! cli.hasValidSourceAndDest() || cli.hasSource() && header.getSourceIPAddress() != cli.getSource() || cli.hasSourceAndDest() && header.getSourceIPAddress() != cli.getSourceAndDest()[0])) {
 			return null;
 		}
-		if (! cli.hasSourceOrDest() && (cli.hasDest() && cli.hasValidDest() && header.getDestinationIPAddress() != cli.getDest() || cli.hasSourceAndDest() && cli.hasValidSourceAndDest() && header.getDestinationIPAddress() != cli.getSourceAndDest()[1])) {
+		if (! cli.hasSourceOrDest() && (cli.hasDest() && ! cli.hasValidDest() || cli.hasSourceAndDest() && ! cli.hasValidSourceAndDest() || cli.hasDest() && header.getDestinationIPAddress() != cli.getDest() || cli.hasSourceAndDest() && header.getDestinationIPAddress() != cli.getSourceAndDest()[1])) {
 			return null;
 		}
-		if (cli.hasSourceOrDest() && cli.hasValidSourceOrDest()) {
+		if (cli.hasSourceOrDest()) {
 			int[] sord = cli.getSourceOrDest();
-			if (header.getSourceIPAddress() != sord[0] || header.getDestinationIPAddress() != sord[1]) {
+			if (! cli.hasValidSourceOrDest() || header.getSourceIPAddress() != sord[0] && header.getDestinationIPAddress() != sord[1]) {
 				return null;
 			}
 		}
@@ -183,11 +182,19 @@ public class Sniffer {
 			return null;
 		}
 		hex = hex.remove(header.getHeaderHexLength());
-		Packet p = null;
-		if (header.getProtocolType() == Config.ETH_IP_ETHERTYPE) {
-			p = Sniffer.processIPPacket(cli, hex);
+		if (! cli.hasSourceOrDest() && (cli.hasSource() && ! cli.hasValidSource() || cli.hasSourceAndDest() && ! cli.hasValidSourceAndDest() || cli.hasSource() && header.getSenderProtocolAddress() != cli.getSource() || cli.hasSourceAndDest() && header.getSenderProtocolAddress() != cli.getSourceAndDest()[0])) {
+			return null;
 		}
-		return p != null ? p : null;
+		if (! cli.hasSourceOrDest() && (cli.hasDest() && ! cli.hasValidDest() || cli.hasSourceAndDest() && ! cli.hasValidSourceAndDest() || cli.hasDest() && header.getTargetProtocolAddress() != cli.getDest() || cli.hasSourceAndDest() && header.getTargetProtocolAddress() != cli.getSourceAndDest()[1])) {
+			return null;
+		}
+		if (cli.hasSourceOrDest()) {
+			int[] sord = cli.getSourceOrDest();
+			if (! cli.hasValidSourceOrDest() || header.getSenderProtocolAddress() != sord[0] && header.getTargetProtocolAddress() != sord[1]) {
+				return null;
+			}
+		}
+		return Packet.build(hex, header);
 	}
 	
 	private static Packet processICMPPacket(SnifferCLI cli, HexString hex) {
@@ -344,6 +351,7 @@ public class Sniffer {
 		} else {
 			System.out.println(Sniffer.formatHexString(hex));
 		}
+		Sniffer.check(cli);
 	}
 	
 	private static void log(SnifferCLI cli, String... S) throws IOException {
@@ -361,5 +369,18 @@ public class Sniffer {
 			}
 			System.out.println("");
 		}
+		Sniffer.check(cli);
+	}
+	
+	private static void check(SnifferCLI cli) {
+		Sniffer.count++;
+		if (cli.hasCount() && Sniffer.count >= cli.getCount()) {
+			Sniffer.exit();
+		}
+	}
+	
+	private static void exit() {
+		Sniffer.adapter.close();
+		System.exit(0);
 	}
 }
