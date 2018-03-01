@@ -15,7 +15,7 @@ import util.Utils;
 
 public class ARPAnalysis {
 	
-	private static final String PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\data\\allarp.dat";
+	private static final String PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\data\\arp.dat";
 	private static final String OUT = "C:\\Users\\ianri\\Workspace\\CS7473\\analysis\\arp.txt";
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
@@ -41,15 +41,17 @@ public class ARPAnalysis {
 			if (addrs.containsKey(srcAddr) && ! addrs.get(srcAddr).containsKey(destAddr)) {
 				addrs.get(srcAddr).put(destAddr, srcAddr);
 			}
+			writer.append(Utils.formatHexString(p.toHexString()));
 			writer.append("SENDER: " + BitString.fromLong(arp.getSenderHardwareAddress()).toHexString().toMACAddress() + "\n");
 			writer.append("SENDER: " + srcAddr + "\n");
 			writer.append("TARGET: " + BitString.fromLong(arp.getTargetHardwareAddress()).toHexString().toMACAddress() + "\n");
 			writer.append("TARGET: " + destAddr + "\n");
-			writer.append("\n");
+			writer.append("BODY:\n");
 			String plaintext = p.extractPlaintext();
 			if (! plaintext.trim().isEmpty()) {
 				writer.append(plaintext + "\n");
 			}
+			writer.append("\n");
 		}
 		writer.append(">>> Connections:\n");
 		for (String skey : addrs.keySet()) {

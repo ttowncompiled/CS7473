@@ -1,472 +1,93 @@
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 00
+00 3c a7 ff 40 00 40 06 0e ec c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 2f 00 00 00 00 a0 02
+16 d0 bd 9c 00 00 02 04 05 b4 04 02 08 0a fa 9b
+aa d0 00 00 00 00 01 03 03 00
+
+BODY:
+
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 00
+00 34 a8 00 40 00 40 06 0e f3 c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 30 a1 4d c1 19 80 10
+16 d0 51 c2 00 00 01 01 08 0a fa 9b aa d0 2b 37
+0c f1
+
+BODY:
+
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 10
+00 34 a8 01 40 00 40 06 0e e2 c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 30 a1 4d c1 79 80 10
+16 d0 51 3a 00 00 01 01 08 0a fa 9b aa f4 2b 37
+0c f5
+
+BODY:
+
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 10
+00 3e a8 02 40 00 40 06 0e d7 c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 30 a1 4d c1 79 80 18
+16 d0 3a e0 00 00 01 01 08 0a fa 9b aa f5 2b 37
+0c f5 41 55 54 48 20 53 53 4c 0d 0a
+
+BODY:
 AUTH\_SSL
 
+
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 10
+00 42 a8 03 40 00 40 06 0e d2 c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 3a a1 4d c1 92 80 18
+16 d0 6f d4 00 00 01 01 08 0a fa 9b aa f6 2b 37
+0c f5 55 53 45 52 20 67 72 6f 75 70 31 34 0d 0a
+
+BODY:
 USER\_group14
 
+
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 10
+00 47 a8 04 40 00 40 06 0e cc c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 48 a1 4d c1 b6 80 18
+16 d0 56 f1 00 00 01 01 08 0a fa 9b aa f7 2b 37
+0c f5 50 41 53 53 20 31 39 32 2e 31 36 38 2e 31
+2e 36 32 0d 0a
+
+BODY:
 PASS\_192.168.1.62
 
+
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 10
+00 3a a8 05 40 00 40 06 0e d8 c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 5b a1 4d c1 cc 80 18
+16 d0 9c f2 00 00 01 01 08 0a fa 9b aa f8 2b 37
+0c f5 53 59 53 54 0d 0a
+
+BODY:
 SYST
 
+
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 10
+00 3a a8 06 40 00 40 06 0e d7 c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 61 a1 4d c1 df 80 18
+16 d0 a8 dd 00 00 01 01 08 0a fa 9b aa f8 2b 37
+0c f5 51 55 49 54 0d 0a
+
+BODY:
 QUIT
 
-AUTH\_SSL
 
-USER\_group14
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 10
+00 34 a8 07 40 00 40 06 0e dc c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 67 a1 4d c1 ed 80 11
+16 d0 50 89 00 00 01 01 08 0a fa 9b aa f9 2b 37
+0c f5
 
-PASS\_192.168.1.62
+BODY:
 
-SYST
+00 c0 4f 8d 93 f2 00 60 97 b9 58 7d 08 00 45 10
+00 34 a8 08 40 00 40 06 0e db c0 a8 01 3e c0 a8
+01 42 13 48 00 15 29 d1 0d 68 a1 4d c1 ee 80 10
+16 d0 50 88 00 00 01 01 08 0a fa 9b aa f9 2b 37
+0c f5
 
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
-
-AUTH\_SSL
-
-USER\_group14
-
-PASS\_192.168.1.62
-
-SYST
-
-QUIT
+BODY:
 
 >>> Connections:
 192.168.1.62 -> 192.168.1.66

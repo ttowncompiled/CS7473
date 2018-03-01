@@ -25,4 +25,12 @@ public class Utils {
 		}
 		return rep.toString();
 	}
+	
+	public static String formatHexString(HexString hex) {
+		StringBuilder rep = new StringBuilder();
+		for (int i = 0; i < hex.length(); i += 32) {
+			rep.append(hex.substring(i, i+32).spaced().toString()).append("\n");
+		}
+		return rep.append("\n").toString();
+	}
 }

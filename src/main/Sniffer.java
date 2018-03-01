@@ -64,7 +64,7 @@ public class Sniffer {
 			writer.append("");
 			writer.close();
 		}
-		for (int i = 0; i < hexes.length && (! cli.hasCount() || i < cli.getCount()); i++) {
+		for (int i = 0; i < hexes.length && (! cli.hasCount() || Sniffer.count < cli.getCount()); i++) {
 			HexString hex = hexes[i];
 			Packet p = null;
 			if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
@@ -298,14 +298,6 @@ public class Sniffer {
 		return null;
 	}
 	
-	private static String formatHexString(HexString hex) {
-		StringBuilder rep = new StringBuilder();
-		for (int i = 0; i < hex.length(); i += 32) {
-			rep.append(hex.substring(i, i+32).spaced().toString()).append("\n");
-		}
-		return rep.append("\n").toString();
-	}
-	
 	private static void log(SnifferCLI cli, Packet p) throws IOException {
 		Sniffer.log(cli, p, false);
 	}
@@ -346,10 +338,10 @@ public class Sniffer {
 	private static void log(SnifferCLI cli, HexString hex) throws IOException {
 		if (cli.hasOutput()) {
 			FileWriter writer = new FileWriter(cli.getOutput(), true);
-			writer.append(Sniffer.formatHexString(hex));
+			writer.append(Utils.formatHexString(hex));
 			writer.close();
 		} else {
-			System.out.println(Sniffer.formatHexString(hex));
+			System.out.println(Utils.formatHexString(hex));
 		}
 		Sniffer.check(cli);
 	}
@@ -380,7 +372,9 @@ public class Sniffer {
 	}
 	
 	private static void exit() {
-		Sniffer.adapter.close();
+		if (Sniffer.adapter != null) {
+			Sniffer.adapter.close();
+		}
 		System.exit(0);
 	}
 }

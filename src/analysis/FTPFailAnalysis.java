@@ -43,10 +43,13 @@ public class FTPFailAnalysis {
 			if (addrs.containsKey(srcAddr) && ! addrs.get(srcAddr).containsKey(destAddr)) {
 				addrs.get(srcAddr).put(destAddr, srcAddr);
 			}
+			writer.append(Utils.formatHexString(p.toHexString()));
+			writer.append("BODY:\n");
 			String plaintext = p.extractPlaintext();
 			if (! plaintext.trim().isEmpty()) {
 				writer.append(plaintext + "\n");
 			}
+			writer.append("\n");
 		}
 		writer.append(">>> Connections:\n");
 		for (String skey : addrs.keySet()) {
