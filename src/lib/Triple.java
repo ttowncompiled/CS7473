@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import lib.packets.Packet;
 
-public class Triple {
+public class Triple implements Showable {
 	
 	public static int ARP = 0;
 	public static int IP_NO_OVERLAP = 1;
@@ -59,5 +59,23 @@ public class Triple {
 	
 	public ArrayList<Packet> getFragments() {
 		return this.fragments;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder rep = new StringBuilder();
+		rep.append("SID=").append(this.sid).append("\n");
+		rep.append(this.datagram.toString()).append("\n");
+		if (this.fragments != null && ! this.fragments.isEmpty()) {
+			rep.append(this.fragments.get(0).toString());
+			for (int i = 1; i < this.fragments.size(); i++) {
+				rep.append("\n").append(this.fragments.get(i));
+			}
+		}
+		return rep.toString();
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
 	}
 }

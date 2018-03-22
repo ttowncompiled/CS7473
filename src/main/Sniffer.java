@@ -28,7 +28,9 @@ public class Sniffer {
 	
 	public static final String NAME = "Sniffer";
 	private static Pcap adapter = null;
+
 	private static int count = 0;
+	private static HashMap<String, ArrayList<Packet>> fragments = new HashMap<>();
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
 		SnifferCLI cli = new SnifferCLI(Sniffer.NAME, args);
@@ -66,38 +68,11 @@ public class Sniffer {
 			writer.append("");
 			writer.close();
 		}
-		HashMap<String, ArrayList<Packet>> fragments = new HashMap<>();
 		for (int i = 0; i < hexes.length && (! cli.hasCount() || Sniffer.count < cli.getCount()); i++) {
 			HexString hex = hexes[i];
-			Packet p = null;
 			if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
-				p = Sniffer.processEthernetPacket(cli, hex);
-			}
-			if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
-				continue;
-			}
-			if (cli.hasHeaderInfo() && ! cli.hasType()) {
-				Sniffer.sniffHeaderInfo(p, cli);
-			}
-			if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
-				Sniffer.sniffHeaderInfo(p, cli.getType(), cli);
-			}
-			if (! cli.hasHeaderInfo()) {
-				Sniffer.log(cli, p);
-			}
-			if (p.getNext().getType().equals(Config.ARP)) {
-				Triple t = Triple.ARPTriple(p.getNext());
-			}
-			if (p.getNext().getType().equals(Config.IP)) {
-				IPHeader header = (IPHeader) p.getNext().getHeader();
-				if (! (header.getFlags()[2] == true || header.getFragmentationOffset() > 0)) {
-					continue;
-				}
-				String key = Utils.key(header.getIdentification());
-				if (! fragments.containsKey(key)) {
-					fragments.put(key, new ArrayList<>());
-				}
-				fragments.get(key).add(p.getNext());
+				Packet p = Sniffer.processEthernetPacket(cli, hex);
+				Sniffer.process(cli, p);
 			}
 		}
 	}
@@ -125,22 +100,10 @@ public class Sniffer {
 				ByteBuffer bbuff = ByteBuffer.allocate(packet.size());
 				packet.transferTo(bbuff);
 				HexString hex = BitString.fromBytes(bbuff.array()).toHexString();
-				Packet p = null;
 				try {
 					if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
-						p = Sniffer.processEthernetPacket(cli, hex);
-					}
-					if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
-						return;
-					}
-					if (cli.hasHeaderInfo() && ! cli.hasType()) {
-						Sniffer.sniffHeaderInfo(p, cli);
-					}
-					if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
-						Sniffer.sniffHeaderInfo(p, cli.getType(), cli);
-					}
-					if (! cli.hasHeaderInfo()) {
-						Sniffer.log(cli, p);
+						Packet p = Sniffer.processEthernetPacket(cli, hex);
+						Sniffer.process(cli, p);
 					}
 				} catch (IOException e) {
 					Sniffer.adapter.close();
@@ -253,6 +216,32 @@ public class Sniffer {
 		return Packet.build(hex, header);
 	}
 	
+	private static void process(SnifferCLI cli, Packet p) throws IOException {
+		if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
+			return;
+		}
+		if (cli.hasHeaderInfo() && ! cli.hasType()) {
+			Sniffer.sniffHeaderInfo(p, cli);
+		}
+		if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
+			Sniffer.sniffHeaderInfo(p, cli.getType(), cli);
+		}
+		if (! cli.hasHeaderInfo()) {
+			Sniffer.log(cli, p);
+		}
+		if (p.getNext().getType().equals(Config.ARP)) {
+			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));
+		}
+		if (p.getNext().getType().equals(Config.IP)) {
+			IPHeader header = (IPHeader) p.getNext().getHeader();
+			if (! (header.getFlags()[2] == true || header.getFragmentationOffset() > 0)) {
+				return;
+			}
+			String key = Utils.key(header.getIdentification());
+			Sniffer.put(key, p.getNext());
+		}
+	}
+	
 	private static void sniffHeaderInfo(Packet p, SnifferCLI cli) throws IOException {
 		Sniffer.log(cli,  p, true);
 	}
@@ -315,13 +304,27 @@ public class Sniffer {
 		return null;
 	}
 	
+	private static void log(SnifferCLI cli, Triple t) throws IOException {
+		if (! cli.hasTripleOutputType()) {
+			return;
+		}
+		if (cli.hasOutput()) {
+			FileWriter writer = new FileWriter(cli.getOutput(), true);
+			writer.append(t.toString());
+			writer.append("\n");
+			writer.close();
+		} else {
+			t.show();
+		}
+	}
+	
 	private static void log(SnifferCLI cli, Packet p) throws IOException {
 		Sniffer.log(cli, p, false);
 	}
 	
 	private static void log(SnifferCLI cli, Packet p, boolean headerOnly) throws IOException {
 		if (headerOnly) {
-			if ((cli.hasOutput() && ! cli.hasHuman()) || cli.hasHex()) {
+			if (cli.hasHexOutputType()) {
 				HexString hex = p.getHeader().toHexString();
 				p = p.getNext();
 				while (p != null) {
@@ -329,25 +332,25 @@ public class Sniffer {
 					p = p.getNext();
 				}
 				Sniffer.log(cli, hex);
-			} else {
+			} else if (cli.hasHumanOutputType()) {
 				while (p != null) {
 					Sniffer.log(cli, p.getHeader());
 					p = p.getNext();
 				}
 			}
 		} else {
-			if ((cli.hasOutput() && ! cli.hasHuman()) || cli.hasHex()) {
+			if (cli.hasHexOutputType()) {
 				Sniffer.log(cli, p.toHexString());
-			} else {
+			} else if (cli.hasHumanOutputType()) {
 				Sniffer.log(cli, p.toString(), p.extractPlaintext());
 			}
 		}
 	}
 	
 	private static void log(SnifferCLI cli, Header h) throws IOException {
-		if ((cli.hasOutput() && ! cli.hasHuman()) || cli.hasHex()) {
+		if (cli.hasHexOutputType()) {
 			Sniffer.log(cli, h.toHexString());
-		} else {
+		} else if (cli.hasHumanOutputType()) {
 			Sniffer.log(cli, h.toString());
 		}
 	}
@@ -386,6 +389,13 @@ public class Sniffer {
 		if (cli.hasCount() && Sniffer.count >= cli.getCount()) {
 			Sniffer.exit();
 		}
+	}
+	
+	private static void put(String key, Packet p) {
+		if (! Sniffer.fragments.containsKey(key)) {
+			Sniffer.fragments.put(key, new ArrayList<>());
+		}
+		Sniffer.fragments.get(key).add(p);
 	}
 	
 	private static void exit() {
