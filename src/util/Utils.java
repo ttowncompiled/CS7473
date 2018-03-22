@@ -33,4 +33,8 @@ public class Utils {
 		}
 		return rep.append("\n").toString();
 	}
+	
+	public static String key(short id) {
+		return new StringBuilder(id).toString();
+	}
 }

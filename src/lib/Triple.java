@@ -16,23 +16,23 @@ public class Triple {
 	private Packet datagram;
 	private ArrayList<Packet> fragments;
 	
-	public Triple ARPTriple(Packet packet) {
+	public static Triple ARPTriple(Packet packet) {
 		return new Triple(Triple.ARP, packet, packet);
 	}
 	
-	public Triple NoOverlapTriple(Packet packet, ArrayList<Packet> fragments) {
+	public static Triple NoOverlapTriple(Packet packet, ArrayList<Packet> fragments) {
 		return new Triple(Triple.IP_NO_OVERLAP, packet, fragments);
 	}
 	
-	public Triple OverlapTriple(Packet packet, ArrayList<Packet> fragments) {
+	public static Triple OverlapTriple(Packet packet, ArrayList<Packet> fragments) {
 		return new Triple(Triple.IP_OVERLAP, packet, fragments);
 	}
 	
-	public Triple TooLargeTriple(Packet packet, ArrayList<Packet> fragments) {
+	public static Triple TooLargeTriple(Packet packet, ArrayList<Packet> fragments) {
 		return new Triple(Triple.IP_TOO_LARGE, packet, fragments);
 	}
 	
-	public Triple TimeOutTriple(Packet packet, ArrayList<Packet> fragments) {
+	public static Triple TimeOutTriple(Packet packet, ArrayList<Packet> fragments) {
 		return new Triple(Triple.TIME_OUT, packet, fragments);
 	}
 	

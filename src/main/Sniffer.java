@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.commons.cli.ParseException;
 import org.jnetpcap.Pcap;
@@ -12,6 +13,7 @@ import org.jnetpcap.PcapIf;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
 
+import lib.Triple;
 import lib.headers.ARPHeader;
 import lib.headers.EthernetHeader;
 import lib.headers.Header;
@@ -64,6 +66,7 @@ public class Sniffer {
 			writer.append("");
 			writer.close();
 		}
+		HashMap<String, ArrayList<Packet>> fragments = new HashMap<>();
 		for (int i = 0; i < hexes.length && (! cli.hasCount() || Sniffer.count < cli.getCount()); i++) {
 			HexString hex = hexes[i];
 			Packet p = null;
@@ -81,6 +84,20 @@ public class Sniffer {
 			}
 			if (! cli.hasHeaderInfo()) {
 				Sniffer.log(cli, p);
+			}
+			if (p.getNext().getType().equals(Config.ARP)) {
+				Triple t = Triple.ARPTriple(p.getNext());
+			}
+			if (p.getNext().getType().equals(Config.IP)) {
+				IPHeader header = (IPHeader) p.getNext().getHeader();
+				if (! (header.getFlags()[2] == true || header.getFragmentationOffset() > 0)) {
+					continue;
+				}
+				String key = Utils.key(header.getIdentification());
+				if (! fragments.containsKey(key)) {
+					fragments.put(key, new ArrayList<>());
+				}
+				fragments.get(key).add(p.getNext());
 			}
 		}
 	}
