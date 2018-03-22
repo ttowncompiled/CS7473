@@ -239,6 +239,9 @@ public class Sniffer {
 			}
 			String key = Utils.key(header.getIdentification());
 			Sniffer.put(key, p.getNext());
+			if (header.getFlags()[2] == false && header.getFragmentationOffset() > 0) {
+				ArrayList<Packet> frags = Sniffer.take(key);
+			}
 		}
 	}
 	
@@ -396,6 +399,10 @@ public class Sniffer {
 			Sniffer.fragments.put(key, new ArrayList<>());
 		}
 		Sniffer.fragments.get(key).add(p);
+	}
+	
+	private static ArrayList<Packet> take(String key) {
+		return Sniffer.fragments.remove(key);
 	}
 	
 	private static void exit() {
