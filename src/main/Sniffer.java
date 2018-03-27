@@ -136,14 +136,22 @@ public class Sniffer {
 			}
 			String key = Utils.key(ip.getHeader().getIdentification());
 			Sniffer.insert(key, (IPPacket) p.getNext());
-			if (Sniffer.checkAssembly(key)) {
-				Sniffer.assemble(key);
-			}
-			if (ip.getHeader().getFlags()[2] == false && ip.getHeader().getFragmentationOffset() > 0) {
+			if (Sniffer.checkTimeout(key)) {
+				
+			} else if (Sniffer.checkAssembly(key)) {
 				ArrayList<IPPacket> frags = Sniffer.take(key);
+				if (Sniffer.checkSize(frags)) {
+					
+				} else {
+					Triple t = Sniffer.assemble(frags);
+				}
 			}
 		}
 		Sniffer.checkCount(cli);
+	}
+	
+	private static boolean checkTimeout(String key) {
+		return false;
 	}
 	
 	private static boolean checkAssembly(String key) {
@@ -162,8 +170,12 @@ public class Sniffer {
 		return true;
 	}
 	
-	private static void assemble(String key) {
-		
+	private static boolean checkSize(ArrayList<IPPacket> frags) {
+		return false;
+	}
+	
+	private static Triple assemble(ArrayList<IPPacket> frags) {
+		return null;
 	}
 	
 	private static Packet processEthernetPacket(SnifferCLI cli, HexString hex) {
