@@ -47,6 +47,10 @@ public class ICMPHeader extends Header {
 		return ICMPHeader.MAX_BITS;
 	}
 	
+	public int getHeaderByteLength() {
+		return this.getHeaderBitLength()/8;
+	}
+	
 	public int getHeaderHexLength() {
 		return ICMPHeader.MAX_HEX;
 	}

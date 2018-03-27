@@ -19,6 +19,10 @@ public class NullHeader extends Header {
 		return 0;
 	}
 	
+	public int getHeaderByteLength() {
+		return 0;
+	}
+	
 	public int getHeaderHexLength() {
 		return 0;
 	}

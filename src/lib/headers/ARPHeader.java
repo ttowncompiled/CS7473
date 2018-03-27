@@ -89,6 +89,10 @@ public class ARPHeader extends Header {
 		return ARPHeader.MAX_BITS;
 	}
 	
+	public int getHeaderByteLength() {
+		return this.getHeaderBitLength()/8;
+	}
+	
 	public int getHeaderHexLength() {
 		return ARPHeader.MAX_HEX;
 	}

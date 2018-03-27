@@ -22,6 +22,11 @@ public class DataPacket extends Packet {
 	}
 	
 	@Override
+	public int getByteLength() {
+		return this.data.length()/2;
+	}
+	
+	@Override
 	public String extractPlaintext() {
 		return this.data.toBitString().toPlaintext();
 	}

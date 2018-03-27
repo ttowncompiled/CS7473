@@ -54,6 +54,10 @@ public class UDPHeader extends Header {
 		return UDPHeader.MAX_BITS;
 	}
 	
+	public int getHeaderByteLength() {
+		return this.getHeaderBitLength()/8;
+	}
+	
 	public int getHeaderHexLength() {
 		return UDPHeader.MAX_HEX;
 	}

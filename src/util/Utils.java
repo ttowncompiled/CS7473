@@ -35,6 +35,6 @@ public class Utils {
 	}
 	
 	public static String key(short id) {
-		return new StringBuilder(id).toString();
+		return new StringBuilder().append(id).toString();
 	}
 }

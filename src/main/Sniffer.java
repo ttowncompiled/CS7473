@@ -14,15 +14,8 @@ import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
 
 import lib.Triple;
-import lib.headers.ARPHeader;
-import lib.headers.EthernetHeader;
-import lib.headers.Header;
-import lib.headers.ICMPHeader;
-import lib.headers.IPHeader;
-import lib.headers.TCPHeader;
-import lib.headers.UDPHeader;
-import lib.packets.IPPacket;
-import lib.packets.Packet;
+import lib.headers.*;
+import lib.packets.*;
 import util.*;
 
 public class Sniffer {
@@ -142,7 +135,7 @@ public class Sniffer {
 					if (! Sniffer.checkSize(frags)) {
 						Sniffer.log(cli, Triple.TooLargeTriple(frags.get(0), frags));
 					} else {
-						Sniffer.log(cli, Sniffer.assemble(frags));
+						Sniffer.log(cli, Sniffer.assemble(cli, frags));
 					}
 				}
 			}
@@ -177,11 +170,11 @@ public class Sniffer {
 		return frags.get(frags.size()-1).getHeader().getLengthWithOffset() <= Config.IP_MAX_LENGTH;
 	}
 	
-	private static Triple assemble(ArrayList<IPPacket> frags) {
+	private static Triple assemble(SnifferCLI cli, ArrayList<IPPacket> frags) {
 		if (Sniffer.checkOverlap(frags)) {
-			return Triple.OverlapTriple(Sniffer.assembleDatagram(frags), frags);
+			return Triple.OverlapTriple(Sniffer.assembleDatagram(cli, frags), frags);
 		}
-		return Triple.NoOverlapTriple(Sniffer.assembleDatagram(frags), frags);
+		return Triple.NoOverlapTriple(Sniffer.assembleDatagram(cli, frags), frags);
 	}
 	
 	private static boolean checkOverlap(ArrayList<IPPacket> frags) {
@@ -193,15 +186,23 @@ public class Sniffer {
 		return false;
 	}
 	
-	private static IPPacket assembleDatagram(ArrayList<IPPacket> frags) {
-		if (frags.get(0).getType().equals(Config.ICMP)) {
-			
-		} else if (frags.get(0).getType().equals(Config.TCP)) {
-			
-		} else if (frags.get(0).getType().equals(Config.UDP)) {
-			
+	private static IPPacket assembleDatagram(SnifferCLI cli, ArrayList<IPPacket> frags) {
+		HexString hex = frags.get(0).getNext().toHexString().substring(frags.get(0).getHeader().getSegmentHexLength());
+		for (int i = 1; i < frags.size(); i++) {
+			HexString h = frags.get(i).getNext().toHexString().substring(frags.get(i).getHeader().getSegmentHexLength());
+			int off = frags.get(i-1).getHeader().getLengthWithOffset() - frags.get(i).getHeader().getByteFragmentationOffset();
+			hex = hex.concat(h.remove(2*off));
 		}
-		return null;
+		byte protocol = frags.get(0).getHeader().getProtocol();
+		Packet p = null;
+		if (protocol == Config.IP_ICMP_PROTOCOL) {
+			p = Sniffer.processICMPPacket(cli, hex);
+		} else if (protocol == Config.IP_TCP_PROTOCOL) {
+			p = Sniffer.processTCPPacket(cli, hex);
+		} else if (protocol == Config.IP_UDP_PROTOCOL) {
+			p = Sniffer.processUDPPacket(cli, hex);
+		}
+		return p != null ? new IPPacket(IPHeader.Datagram(frags.get(0).getHeader(), (short) (frags.get(0).getHeader().getHeaderByteLength() + p.getByteLength())), p) : null;
 	}
 	
 	private static Packet processEthernetPacket(SnifferCLI cli, HexString hex) {
@@ -236,6 +237,9 @@ public class Sniffer {
 			if (! cli.hasValidSourceOrDest() || header.getSourceIPAddress() != sord[0] && header.getDestinationIPAddress() != sord[1]) {
 				return null;
 			}
+		}
+		if (header.isFragment()) {
+			return new IPPacket(header, new DataPacket(hex));
 		}
 		Packet p = null;
 		if (header.getProtocol() == Config.IP_ICMP_PROTOCOL) {

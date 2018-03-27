@@ -47,6 +47,10 @@ public class EthernetHeader extends Header {
 		return EthernetHeader.MAX_BITS;
 	}
 	
+	public int getHeaderByteLength() {
+		return this.getHeaderBitLength()/8;
+	}
+	
 	public int getHeaderHexLength() {
 		return EthernetHeader.MAX_HEX;
 	}

@@ -49,6 +49,12 @@ public class IPHeader extends Header {
 		}
 		return new IPHeader(version, IHL, typeOfService, totalLength, identification, flags, fragOffset, timeToLive, protocol, checksum, source, dest, options);
 	}
+	
+	public static IPHeader Datagram(IPHeader header, short totalLength) {
+		boolean[] flags = new boolean[3];
+		flags[1] = true;
+		return new IPHeader(header.version, header.IPHeaderLength, header.typeOfService, totalLength, header.identification, flags, (short) 0, header.timeToLive, header.protocol, header.checksum, header.sourceIPAddress, header.destinationIPAddress, header.optionsPadding);
+	}
 
 	public IPHeader(byte version, byte IHL, byte typeOfService, short totalLength, short identification, boolean[] flags, short fragOffset, byte timeToLive, byte protocol, short checksum, int source, int dest, int[] optionsPadding) {
 		super(Config.IP);
@@ -153,6 +159,10 @@ public class IPHeader extends Header {
 	
 	public int getLengthWithOffset() {
 		return this.getByteFragmentationOffset() + this.getLengthNoHeader();
+	}
+	
+	public int getSegmentHexLength() {
+		return 2*this.getLengthNoHeader();
 	}
 	
 	public HexString toHexString() {

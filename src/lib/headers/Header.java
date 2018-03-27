@@ -17,6 +17,8 @@ public abstract class Header implements Showable {
 	
 	public abstract int getHeaderBitLength();
 	
+	public abstract int getHeaderByteLength();
+	
 	public abstract int getHeaderHexLength();
 	
 	public abstract HexString toHexString();

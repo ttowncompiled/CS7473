@@ -109,6 +109,10 @@ public class TCPHeader extends Header {
 		return 32*this.dataOffset;
 	}
 	
+	public int getHeaderByteLength() {
+		return 4*this.dataOffset;
+	}
+	
 	public int getHeaderHexLength() {
 		return 8*this.dataOffset;
 	}
