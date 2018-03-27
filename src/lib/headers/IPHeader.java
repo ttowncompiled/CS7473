@@ -151,6 +151,10 @@ public class IPHeader extends Header {
 		return this.totalLength - this.getHeaderByteLength();
 	}
 	
+	public int getLengthWithOffset() {
+		return this.getByteFragmentationOffset() + this.getLengthNoHeader();
+	}
+	
 	public HexString toHexString() {
 		BitString bits = BitString.fromByte(this.version, 4)
 								  .concat(BitString.fromByte(this.IPHeaderLength, 4))

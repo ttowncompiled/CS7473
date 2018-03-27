@@ -134,7 +134,7 @@ public class Sniffer {
 			if (ip.getHeader().isFragment()) {
 				String key = Utils.key(ip.getHeader().getIdentification());
 				Sniffer.insert(key, ip);
-				if (! Sniffer.checkTimeout(key)) {
+				if (Sniffer.checkTimeout(key)) {
 					ArrayList<IPPacket> frags = Sniffer.take(key);
 					Sniffer.log(cli, Triple.TimeOutTriple(frags.get(0), frags));
 				} else if (Sniffer.checkAssembly(key)) {
@@ -166,7 +166,7 @@ public class Sniffer {
 			return false;
 		}
 		for (int i = 1; i < frags.size(); i++) {
-			if (frags.get(i-1).getHeader().getLengthNoHeader() < frags.get(i).getHeader().getByteFragmentationOffset()) {
+			if (frags.get(i-1).getHeader().getLengthWithOffset() < frags.get(i).getHeader().getByteFragmentationOffset()) {
 				return false;
 			}
 		}
@@ -174,11 +174,33 @@ public class Sniffer {
 	}
 	
 	private static boolean checkSize(ArrayList<IPPacket> frags) {
-		IPHeader h = frags.get(frags.size()-1).getHeader();
-		return h.getLengthNoHeader() + h.getByteFragmentationOffset() <= Config.IP_MAX_LENGTH;
+		return frags.get(frags.size()-1).getHeader().getLengthWithOffset() <= Config.IP_MAX_LENGTH;
 	}
 	
 	private static Triple assemble(ArrayList<IPPacket> frags) {
+		if (Sniffer.checkOverlap(frags)) {
+			return Triple.OverlapTriple(Sniffer.assembleDatagram(frags), frags);
+		}
+		return Triple.NoOverlapTriple(Sniffer.assembleDatagram(frags), frags);
+	}
+	
+	private static boolean checkOverlap(ArrayList<IPPacket> frags) {
+		for (int i = 1; i < frags.size(); i++) {
+			if (frags.get(i-1).getHeader().getLengthWithOffset() > frags.get(i).getHeader().getByteFragmentationOffset()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static IPPacket assembleDatagram(ArrayList<IPPacket> frags) {
+		if (frags.get(0).getType().equals(Config.ICMP)) {
+			
+		} else if (frags.get(0).getType().equals(Config.TCP)) {
+			
+		} else if (frags.get(0).getType().equals(Config.UDP)) {
+			
+		}
 		return null;
 	}
 	
