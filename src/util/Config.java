@@ -21,4 +21,6 @@ public class Config {
 	public static final String HTTP_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\http.dat";
 	public static final String PING_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\ping.dat";
 	public static final String TELNET_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\telnet.dat";
+	
+	public static final int IP_MAX_LENGTH = 65548;
 }

@@ -2,6 +2,7 @@ package lib;
 
 import java.util.ArrayList;
 
+import lib.packets.IPPacket;
 import lib.packets.Packet;
 
 public class Triple implements Showable {
@@ -20,19 +21,19 @@ public class Triple implements Showable {
 		return new Triple(Triple.ARP, packet, packet);
 	}
 	
-	public static Triple NoOverlapTriple(Packet packet, ArrayList<Packet> fragments) {
+	public static Triple NoOverlapTriple(IPPacket packet, ArrayList<IPPacket> fragments) {
 		return new Triple(Triple.IP_NO_OVERLAP, packet, fragments);
 	}
 	
-	public static Triple OverlapTriple(Packet packet, ArrayList<Packet> fragments) {
+	public static Triple OverlapTriple(IPPacket packet, ArrayList<IPPacket> fragments) {
 		return new Triple(Triple.IP_OVERLAP, packet, fragments);
 	}
 	
-	public static Triple TooLargeTriple(Packet packet, ArrayList<Packet> fragments) {
+	public static Triple TooLargeTriple(IPPacket packet, ArrayList<IPPacket> fragments) {
 		return new Triple(Triple.IP_TOO_LARGE, packet, fragments);
 	}
 	
-	public static Triple TimeOutTriple(Packet packet, ArrayList<Packet> fragments) {
+	public static Triple TimeOutTriple(IPPacket packet, ArrayList<IPPacket> fragments) {
 		return new Triple(Triple.TIME_OUT, packet, fragments);
 	}
 	
@@ -47,6 +48,13 @@ public class Triple implements Showable {
 		this.sid = sid;
 		this.datagram = datagram;
 		this.fragments = fragments;
+	}
+	
+	public Triple(int sid, IPPacket datagram, ArrayList<IPPacket> fragments) {
+		this.sid = sid;
+		this.datagram = datagram;
+		this.fragments = new ArrayList<>();
+		this.fragments.addAll(fragments);
 	}
 	
 	public int getID() {

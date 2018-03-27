@@ -95,6 +95,10 @@ public class IPHeader extends Header {
 		return this.fragmentationOffset;
 	}
 	
+	public int getByteFragmentationOffset() {
+		return 8*this.fragmentationOffset;
+	}
+	
 	public byte getTimeToLive() {
 		return this.timeToLive;
 	}
@@ -123,8 +127,28 @@ public class IPHeader extends Header {
 		return 32*this.IPHeaderLength;
 	}
 	
+	public int getHeaderByteLength() {
+		return 4*this.IPHeaderLength;
+	}
+	
 	public int getHeaderHexLength() {
 		return 8*this.IPHeaderLength;
+	}
+	
+	public boolean isFragment() {
+		return this.flags[2] == true || this.fragmentationOffset > 0;
+	}
+	
+	public boolean isFirstFragment() {
+		return this.flags[2] == true && this.fragmentationOffset == 0;
+	}
+	
+	public boolean isLastFragment() {
+		return this.flags[2] == false && this.fragmentationOffset > 0;
+	}
+	
+	public int getLengthNoHeader() {
+		return this.totalLength - this.getHeaderByteLength();
 	}
 	
 	public HexString toHexString() {

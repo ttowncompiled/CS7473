@@ -131,19 +131,19 @@ public class Sniffer {
 		}
 		if (p.getNext().getType().equals(Config.IP)) {
 			IPPacket ip = (IPPacket) p.getNext();
-			if (! (ip.getHeader().getFlags()[2] == true || ip.getHeader().getFragmentationOffset() > 0)) {
-				return;
-			}
-			String key = Utils.key(ip.getHeader().getIdentification());
-			Sniffer.insert(key, (IPPacket) p.getNext());
-			if (Sniffer.checkTimeout(key)) {
-				
-			} else if (Sniffer.checkAssembly(key)) {
-				ArrayList<IPPacket> frags = Sniffer.take(key);
-				if (Sniffer.checkSize(frags)) {
-					
-				} else {
-					Triple t = Sniffer.assemble(frags);
+			if (ip.getHeader().isFragment()) {
+				String key = Utils.key(ip.getHeader().getIdentification());
+				Sniffer.insert(key, ip);
+				if (! Sniffer.checkTimeout(key)) {
+					ArrayList<IPPacket> frags = Sniffer.take(key);
+					Sniffer.log(cli, Triple.TimeOutTriple(frags.get(0), frags));
+				} else if (Sniffer.checkAssembly(key)) {
+					ArrayList<IPPacket> frags = Sniffer.take(key);
+					if (! Sniffer.checkSize(frags)) {
+						Sniffer.log(cli, Triple.TooLargeTriple(frags.get(0), frags));
+					} else {
+						Sniffer.log(cli, Sniffer.assemble(frags));
+					}
 				}
 			}
 		}
@@ -159,11 +159,14 @@ public class Sniffer {
 			return false;
 		}
 		ArrayList<IPPacket> frags = Sniffer.fragments.get(key);
-		if (! (frags.get(frags.size()-1).getHeader().getFlags()[2] == false && frags.get(frags.size()-1).getHeader().getFragmentationOffset() > 0)) {
+		if (! frags.get(0).getHeader().isFirstFragment()) {
+			return false;
+		}
+		if (! frags.get(frags.size()-1).getHeader().isLastFragment()) {
 			return false;
 		}
 		for (int i = 1; i < frags.size(); i++) {
-			if ((frags.get(i-1).getHeader().getTotalLength() - 4*frags.get(i-1).getHeader().getIPHeaderLength())/8 <= frags.get(i).getHeader().getFragmentationOffset()) {
+			if (frags.get(i-1).getHeader().getLengthNoHeader() < frags.get(i).getHeader().getByteFragmentationOffset()) {
 				return false;
 			}
 		}
@@ -171,7 +174,8 @@ public class Sniffer {
 	}
 	
 	private static boolean checkSize(ArrayList<IPPacket> frags) {
-		return false;
+		IPHeader h = frags.get(frags.size()-1).getHeader();
+		return h.getLengthNoHeader() + h.getByteFragmentationOffset() <= Config.IP_MAX_LENGTH;
 	}
 	
 	private static Triple assemble(ArrayList<IPPacket> frags) {
@@ -219,7 +223,7 @@ public class Sniffer {
 		} else if (header.getProtocol() == Config.IP_UDP_PROTOCOL) {
 			p = Sniffer.processUDPPacket(cli, hex);
 		}
-		return p != null ? new Packet(header, p) : null;
+		return p != null ? new IPPacket(header, p) : null;
 	}
 	
 	private static Packet processARPPacket(SnifferCLI cli, HexString hex) {
