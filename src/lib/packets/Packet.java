@@ -6,8 +6,8 @@ import lib.Showable;
 
 public class Packet implements Showable {
 
-	private Header header;
-	private Packet next;
+	protected Header header;
+	protected Packet next;
 	
 	public static Packet build(HexString data, Header... headers) {
 		Packet p = ! data.isEmpty() ? new DataPacket(data) : null;

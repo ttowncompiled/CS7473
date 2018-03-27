@@ -21,6 +21,7 @@ import lib.headers.ICMPHeader;
 import lib.headers.IPHeader;
 import lib.headers.TCPHeader;
 import lib.headers.UDPHeader;
+import lib.packets.IPPacket;
 import lib.packets.Packet;
 import util.*;
 
@@ -30,7 +31,7 @@ public class Sniffer {
 	private static Pcap adapter = null;
 
 	private static int count = 0;
-	private static HashMap<String, ArrayList<Packet>> fragments = new HashMap<>();
+	private static HashMap<String, ArrayList<IPPacket>> fragments = new HashMap<>();
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
 		SnifferCLI cli = new SnifferCLI(Sniffer.NAME, args);
@@ -61,18 +62,22 @@ public class Sniffer {
 		}
 	}
 	
-	private static void sniffFile(SnifferCLI cli) throws FileNotFoundException, IOException {
-		HexString[] hexes = HexFile.parse(cli.getInput());
+	private static void start(SnifferCLI cli) throws FileNotFoundException, IOException {
 		if (cli.hasOutput()) {
 			FileWriter writer = new FileWriter(cli.getOutput(), false);
 			writer.append("");
 			writer.close();
 		}
+	}
+	
+	private static void sniffFile(SnifferCLI cli) throws FileNotFoundException, IOException {
+		HexString[] hexes = HexFile.parse(cli.getInput());
+		Sniffer.start(cli);
 		for (int i = 0; i < hexes.length && (! cli.hasCount() || Sniffer.count < cli.getCount()); i++) {
 			HexString hex = hexes[i];
 			if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
 				Packet p = Sniffer.processEthernetPacket(cli, hex);
-				Sniffer.process(cli, p);
+				Sniffer.processPacket(cli, p);
 			}
 		}
 	}
@@ -86,11 +91,7 @@ public class Sniffer {
 		if (Sniffer.adapter == null) {
 			return;
 		}
-		if (cli.hasOutput()) {
-			FileWriter writer = new FileWriter(cli.getOutput(), false);
-			writer.append("");
-			writer.close();
-		}
+		Sniffer.start(cli);
 		Sniffer.adapter.loop(Pcap.LOOP_INFINITE, new PcapPacketHandler<SnifferCLI>() {
 			public void nextPacket(PcapPacket packet, SnifferCLI cli) {
 				System.out.println(">>> Packet received.");
@@ -103,13 +104,66 @@ public class Sniffer {
 				try {
 					if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
 						Packet p = Sniffer.processEthernetPacket(cli, hex);
-						Sniffer.process(cli, p);
+						Sniffer.processPacket(cli, p);
 					}
 				} catch (IOException e) {
 					Sniffer.adapter.close();
 				}
 			}
 		}, cli);
+	}
+	
+	private static void processPacket(SnifferCLI cli, Packet p) throws IOException {
+		if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
+			return;
+		}
+		if (cli.hasHeaderInfo() && ! cli.hasType()) {
+			Sniffer.sniffHeaderInfo(p, cli);
+		}
+		if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
+			Sniffer.sniffHeaderInfo(p, cli.getType(), cli);
+		}
+		if (! cli.hasHeaderInfo()) {
+			Sniffer.log(cli, p);
+		}
+		if (p.getNext().getType().equals(Config.ARP)) {
+			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));
+		}
+		if (p.getNext().getType().equals(Config.IP)) {
+			IPPacket ip = (IPPacket) p.getNext();
+			if (! (ip.getHeader().getFlags()[2] == true || ip.getHeader().getFragmentationOffset() > 0)) {
+				return;
+			}
+			String key = Utils.key(ip.getHeader().getIdentification());
+			Sniffer.insert(key, (IPPacket) p.getNext());
+			if (Sniffer.checkAssembly(key)) {
+				Sniffer.assemble(key);
+			}
+			if (ip.getHeader().getFlags()[2] == false && ip.getHeader().getFragmentationOffset() > 0) {
+				ArrayList<IPPacket> frags = Sniffer.take(key);
+			}
+		}
+		Sniffer.checkCount(cli);
+	}
+	
+	private static boolean checkAssembly(String key) {
+		if (Sniffer.fragments.get(key) == null || Sniffer.fragments.get(key).isEmpty()) {
+			return false;
+		}
+		ArrayList<IPPacket> frags = Sniffer.fragments.get(key);
+		if (! (frags.get(frags.size()-1).getHeader().getFlags()[2] == false && frags.get(frags.size()-1).getHeader().getFragmentationOffset() > 0)) {
+			return false;
+		}
+		for (int i = 1; i < frags.size(); i++) {
+			if ((frags.get(i-1).getHeader().getTotalLength() - 4*frags.get(i-1).getHeader().getIPHeaderLength())/8 <= frags.get(i).getHeader().getFragmentationOffset()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static void assemble(String key) {
+		
 	}
 	
 	private static Packet processEthernetPacket(SnifferCLI cli, HexString hex) {
@@ -214,35 +268,6 @@ public class Sniffer {
 			return null;
 		}
 		return Packet.build(hex, header);
-	}
-	
-	private static void process(SnifferCLI cli, Packet p) throws IOException {
-		if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
-			return;
-		}
-		if (cli.hasHeaderInfo() && ! cli.hasType()) {
-			Sniffer.sniffHeaderInfo(p, cli);
-		}
-		if (cli.hasHeaderInfo() && cli.hasType() && cli.hasValidType()) {
-			Sniffer.sniffHeaderInfo(p, cli.getType(), cli);
-		}
-		if (! cli.hasHeaderInfo()) {
-			Sniffer.log(cli, p);
-		}
-		if (p.getNext().getType().equals(Config.ARP)) {
-			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));
-		}
-		if (p.getNext().getType().equals(Config.IP)) {
-			IPHeader header = (IPHeader) p.getNext().getHeader();
-			if (! (header.getFlags()[2] == true || header.getFragmentationOffset() > 0)) {
-				return;
-			}
-			String key = Utils.key(header.getIdentification());
-			Sniffer.put(key, p.getNext());
-			if (header.getFlags()[2] == false && header.getFragmentationOffset() > 0) {
-				ArrayList<Packet> frags = Sniffer.take(key);
-			}
-		}
 	}
 	
 	private static void sniffHeaderInfo(Packet p, SnifferCLI cli) throws IOException {
@@ -366,7 +391,6 @@ public class Sniffer {
 		} else {
 			System.out.println(Utils.formatHexString(hex));
 		}
-		Sniffer.check(cli);
 	}
 	
 	private static void log(SnifferCLI cli, String... S) throws IOException {
@@ -384,24 +408,29 @@ public class Sniffer {
 			}
 			System.out.println("");
 		}
-		Sniffer.check(cli);
 	}
 	
-	private static void check(SnifferCLI cli) {
+	private static void checkCount(SnifferCLI cli) {
 		Sniffer.count++;
 		if (cli.hasCount() && Sniffer.count >= cli.getCount()) {
 			Sniffer.exit();
 		}
 	}
 	
-	private static void put(String key, Packet p) {
+	private static void insert(String key, IPPacket p) {
 		if (! Sniffer.fragments.containsKey(key)) {
 			Sniffer.fragments.put(key, new ArrayList<>());
+		}
+		for (int i = 0; i < Sniffer.fragments.get(key).size(); i++) {
+			if (p.getHeader().getFragmentationOffset() < Sniffer.fragments.get(key).get(i).getHeader().getFragmentationOffset()) {
+				Sniffer.fragments.get(key).add(i, p);
+				return;
+			}
 		}
 		Sniffer.fragments.get(key).add(p);
 	}
 	
-	private static ArrayList<Packet> take(String key) {
+	private static ArrayList<IPPacket> take(String key) {
 		return Sniffer.fragments.remove(key);
 	}
 	
