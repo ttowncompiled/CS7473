@@ -97,7 +97,7 @@ public class SnifferCLI {
 	}
 	
 	public boolean hasValidTimeout() {
-		return ! this.cmd.hasOption(SnifferCLI.TIMEOUT) || StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.TIMEOUT));
+		return this.cmd.hasOption(SnifferCLI.TIMEOUT) && StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.TIMEOUT));
 	}
 	
 	public double getTimeout() {
