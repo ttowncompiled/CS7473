@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,6 +26,7 @@ public class Sniffer {
 
 	private static int count = 0;
 	private static HashMap<String, ArrayList<IPPacket>> fragments = new HashMap<>();
+	private static HashMap<String, Timestamp> timestamps = new HashMap<>();
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
 		SnifferCLI cli = new SnifferCLI(Sniffer.NAME, args);
@@ -110,6 +112,34 @@ public class Sniffer {
 		if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
 			return;
 		}
+		if (p.getNext().getType().equals(Config.ARP)) {
+			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));
+		}
+		if (p.getNext().getType().equals(Config.IP)) {
+			IPPacket ip = (IPPacket) p.getNext();
+			if (ip.getHeader().isFragment()) {
+				String key = Utils.key(ip.getHeader().getIdentification());
+				Sniffer.insert(key, ip);
+				if (Sniffer.checkTimeout(cli, key)) {
+					ArrayList<IPPacket> frags = Sniffer.take(key);
+					Sniffer.log(cli, Triple.TimeOutTriple(frags.get(0), frags));
+					return;
+				} else if (Sniffer.checkAssembly(key)) {
+					ArrayList<IPPacket> frags = Sniffer.take(key);
+					if (! Sniffer.checkSize(frags)) {
+						System.out.println(">>> HERE");
+						Sniffer.log(cli, Triple.TooLargeTriple(frags.get(0), frags));
+						return;
+					} else {
+						Triple t = Sniffer.assemble(cli, frags);
+						Sniffer.log(cli, t);
+						p = new Packet(p.getHeader(), t.getDatagram());
+					}
+				} else {
+					return;
+				}
+			}
+		}
 		if (cli.hasHeaderInfo() && ! cli.hasType()) {
 			Sniffer.sniffHeaderInfo(p, cli);
 		}
@@ -119,32 +149,15 @@ public class Sniffer {
 		if (! cli.hasHeaderInfo()) {
 			Sniffer.log(cli, p);
 		}
-		if (p.getNext().getType().equals(Config.ARP)) {
-			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));
-		}
-		if (p.getNext().getType().equals(Config.IP)) {
-			IPPacket ip = (IPPacket) p.getNext();
-			if (ip.getHeader().isFragment()) {
-				String key = Utils.key(ip.getHeader().getIdentification());
-				Sniffer.insert(key, ip);
-				if (Sniffer.checkTimeout(key)) {
-					ArrayList<IPPacket> frags = Sniffer.take(key);
-					Sniffer.log(cli, Triple.TimeOutTriple(frags.get(0), frags));
-				} else if (Sniffer.checkAssembly(key)) {
-					ArrayList<IPPacket> frags = Sniffer.take(key);
-					if (! Sniffer.checkSize(frags)) {
-						Sniffer.log(cli, Triple.TooLargeTriple(frags.get(0), frags));
-					} else {
-						Sniffer.log(cli, Sniffer.assemble(cli, frags));
-					}
-				}
-			}
-		}
 		Sniffer.checkCount(cli);
 	}
 	
-	private static boolean checkTimeout(String key) {
-		return false;
+	private static boolean checkTimeout(SnifferCLI cli, String key) {
+		if (! Sniffer.timestamps.containsKey(key)) {
+			return false;
+		}
+		Timestamp stamp = new Timestamp(System.currentTimeMillis());
+		return stamp.getTime() - Sniffer.timestamps.get(key).getTime() >= 1000*cli.getTimeout();
 	}
 	
 	private static boolean checkAssembly(String key) {
@@ -337,7 +350,7 @@ public class Sniffer {
 	
 	private static boolean isEthernetPacket(HexString hex) {
 		EthernetHeader header = EthernetHeader.parse(hex.substring(EthernetHeader.MAX_HEX).toBitString());
-		return Sniffer.isEthernetEtherType(header.getEtherType());
+		return header != null ? Sniffer.isEthernetEtherType(header.getEtherType()) : false;
 	}
 	
 	private static boolean isEthernetEtherType(int etherType) {
@@ -462,6 +475,7 @@ public class Sniffer {
 	private static void insert(String key, IPPacket p) {
 		if (! Sniffer.fragments.containsKey(key)) {
 			Sniffer.fragments.put(key, new ArrayList<>());
+			Sniffer.timestamps.put(key, new Timestamp(System.currentTimeMillis()));
 		}
 		for (int i = 0; i < Sniffer.fragments.get(key).size(); i++) {
 			if (p.getHeader().getFragmentationOffset() < Sniffer.fragments.get(key).get(i).getHeader().getFragmentationOffset()) {
@@ -473,6 +487,7 @@ public class Sniffer {
 	}
 	
 	private static ArrayList<IPPacket> take(String key) {
+		Sniffer.timestamps.remove(key);
 		return Sniffer.fragments.remove(key);
 	}
 	

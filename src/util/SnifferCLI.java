@@ -12,6 +12,7 @@ public class SnifferCLI {
 	public static final String HUMAN = "human";
 	public static final String HEX = "hex";
 	public static final String TRIP = "trip";
+	public static final String TIMEOUT = "timeout";
 	public static final String TYPE = "t";
 	public static final String HEADER_INFO = "h";
 	public static final String SRC = "src";
@@ -36,6 +37,7 @@ public class SnifferCLI {
 		this.options.addOption(OptionBuilder.hasArg().withArgName("filename").withDescription("Read packets from file. Program reads packets from the network by default.").create(SnifferCLI.INPUT));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("filename").withDescription("Save output to filename.").create(SnifferCLI.OUTPUT));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("type").withDescription("Writes output in type where type is one of: ['human', 'hex', 'trip']. The default type is 'human'.").create(SnifferCLI.OUT_TYPE));
+		this.options.addOption(OptionBuilder.hasArg().withArgName("time (s)").withDescription("Sets the fragment assembly timeout. Default is 1800 seconds.").create(SnifferCLI.TIMEOUT));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("type").withDescription("Print only packets of the specified type where type is one of: ['eth', 'arp', 'ip', 'icmp', 'tcp', 'udp'].").create(SnifferCLI.TYPE));
 		this.options.addOption(OptionBuilder.withDescription("Print header info only as specified by -t.").create(SnifferCLI.HEADER_INFO));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("saddress").withDescription("Print only packets with source address equal to saddress.").create(SnifferCLI.SRC));
@@ -92,6 +94,14 @@ public class SnifferCLI {
 	
 	public boolean hasTripleOutputType() {
 		return this.getOutputType().equals(SnifferCLI.TRIP);
+	}
+	
+	public boolean hasValidTimeout() {
+		return ! this.cmd.hasOption(SnifferCLI.TIMEOUT) || StringUtils.isNumeric(this.cmd.getOptionValue(SnifferCLI.TIMEOUT));
+	}
+	
+	public double getTimeout() {
+		return this.hasValidTimeout() ? Double.parseDouble(this.cmd.getOptionValue(SnifferCLI.TIMEOUT)) : 1800;
 	}
 	
 	public boolean hasType() {
