@@ -19,7 +19,16 @@ public class Rule implements Showable {
 		if (action == null || protocol == null || srcIPMask == null || srcPort == null || direction == null || destIPMask == null || destPort == null) {
 			return null;
 		}
-		return new Rule(action, protocol, srcIPMask, srcPort, direction, destIPMask, destPort);
+		Options options = null;
+		if (args.length > 7) {
+			StringBuilder rep = new StringBuilder();
+			rep.append(args[7]);
+			for (int i = 8; i < args.length; i++) {
+				rep.append(" ").append(args[i]);
+			}
+			options = Options.parseOptions(rep.toString());
+		}
+		return new Rule(action, protocol, srcIPMask, srcPort, direction, destIPMask, destPort, options);
 	}
 	
 	private ActionRule action;
@@ -29,8 +38,9 @@ public class Rule implements Showable {
 	private DirectionRule direction;
 	private IPMaskRule destIPMask;
 	private PortRule destPort;
+	private Options options;
 	
-	public Rule(ActionRule action, ProtocolRule protocol, IPMaskRule srcIPMask, PortRule srcPort, DirectionRule direction, IPMaskRule destIPMask, PortRule destPort) {
+	public Rule(ActionRule action, ProtocolRule protocol, IPMaskRule srcIPMask, PortRule srcPort, DirectionRule direction, IPMaskRule destIPMask, PortRule destPort, Options options) {
 		this.action = action;
 		this.protocol = protocol;
 		this.srcIPMask = srcIPMask;
@@ -38,6 +48,7 @@ public class Rule implements Showable {
 		this.direction = direction;
 		this.destIPMask = destIPMask;
 		this.destPort = destPort;
+		this.options = options;
 	}
 	
 	public boolean checkPacket(Packet p) {
@@ -53,6 +64,7 @@ public class Rule implements Showable {
 								  .append(this.direction.toString()).append(" ")
 								  .append(this.destIPMask.toString()).append(" ")
 								  .append(this.destPort.toString()).append(" ")
+								  .append(this.options != null ? this.options.toString() : "")
 								  .toString();
 	}
 	
