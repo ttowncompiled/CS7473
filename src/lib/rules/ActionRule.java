@@ -1,6 +1,8 @@
 package lib.rules;
 
-public class ActionRule {
+import lib.Showable;
+
+public class ActionRule implements Showable {
 
 	public static final String ALERT = "alert";
 	public static final String PASS = "pass";
@@ -28,5 +30,14 @@ public class ActionRule {
 	
 	public boolean isPass() {
 		return this.action.equals(ActionRule.PASS);
+	}
+	
+	@Override
+	public String toString() {
+		return this.action;
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
 	}
 }

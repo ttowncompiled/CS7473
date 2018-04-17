@@ -2,7 +2,9 @@ package lib.rules;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class PortRule {
+import lib.Showable;
+
+public class PortRule implements Showable {
 
 	public static PortRule parsePort(String port) {
 		if (port.equals(Rule.ANY)) {
@@ -65,6 +67,14 @@ public class PortRule {
 		return this.port2;
 	}
 	
+	public boolean onlyPort1() {
+		return this.onlyPort1;
+	}
+	
+	public boolean onlyPort2() {
+		return this.lessThanPort2;
+	}
+	
 	public boolean isAny() {
 		return this.anyPort;
 	}
@@ -78,5 +88,21 @@ public class PortRule {
 			return this.port2 >= port;
 		}
 		return this.port1 <= port && port <= this.port2;
+	}
+	
+	@Override
+	public String toString() {
+		if (this.isAny()) {
+			return Rule.ANY;
+		} else if (this.onlyPort1()) {
+			return new StringBuilder().append(this.port1).toString();
+		} else if (this.onlyPort2()) {
+			return new StringBuilder().append(":").append(this.port2).toString();
+		}
+		return new StringBuilder().append(this.port1).append(":").append(this.port2).toString();
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
 	}
 }

@@ -1,6 +1,8 @@
 package lib.rules;
 
-public class DirectionRule {
+import lib.Showable;
+
+public class DirectionRule implements Showable {
 	
 	public static final String UNI = "->";
 	public static final String BI = "<>";
@@ -28,5 +30,14 @@ public class DirectionRule {
 	
 	public boolean isBi() {
 		return this.direction.equals(DirectionRule.BI);
+	}
+	
+	@Override
+	public String toString() {
+		return this.direction;
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
 	}
 }

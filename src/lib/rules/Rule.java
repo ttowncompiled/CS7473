@@ -1,8 +1,9 @@
 package lib.rules;
 
+import lib.Showable;
 import lib.packets.Packet;
 
-public class Rule {
+public class Rule implements Showable {
 	
 	public static final String ANY = "any";
 	
@@ -40,6 +41,22 @@ public class Rule {
 	}
 	
 	public boolean checkPacket(Packet p) {
-		
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder().append(this.action.toString()).append(" ")
+								  .append(this.protocol.toString()).append(" ")
+								  .append(this.srcIPMask.toString()).append(" ")
+								  .append(this.srcPort.toString()).append(" ")
+								  .append(this.direction.toString()).append(" ")
+								  .append(this.destIPMask.toString()).append(" ")
+								  .append(this.destPort.toString()).append(" ")
+								  .toString();
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
 	}
 }

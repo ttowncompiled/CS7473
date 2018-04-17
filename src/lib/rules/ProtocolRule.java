@@ -1,8 +1,9 @@
 package lib.rules;
 
+import lib.Showable;
 import util.Config;
 
-public class ProtocolRule {
+public class ProtocolRule implements Showable {
 	
 	public static ProtocolRule parseProtocol(String protocol) {
 		if (! protocol.equals(Config.IP) && ! protocol.equals(Config.ARP) && ! protocol.equals(Config.TCP) && ! protocol.equals(Config.UDP) && ! protocol.equals(Config.ICMP) && ! protocol.equals(Rule.ANY)) {
@@ -43,5 +44,14 @@ public class ProtocolRule {
 	
 	public boolean isAny() {
 		return this.protocol.equals(Rule.ANY);
+	}
+	
+	@Override
+	public String toString() {
+		return this.protocol;
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
 	}
 }

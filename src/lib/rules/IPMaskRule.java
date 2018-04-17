@@ -2,9 +2,10 @@ package lib.rules;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lib.Showable;
 import util.Utils;
 
-public class IPMaskRule {
+public class IPMaskRule implements Showable {
 
 	public static IPMaskRule parseIPMask(String ipMask) {
 		if (ipMask.equals(Rule.ANY)) {
@@ -40,5 +41,17 @@ public class IPMaskRule {
 	
 	public boolean isAny() {
 		return this.any;
+	}
+	
+	@Override
+	public String toString() {
+		if (this.isAny()) {
+			return Rule.ANY;
+		}
+		return new StringBuilder().append(Utils.convertToIPAddress(this.ip)).append("/").append(this.mask).toString();
+	}
+	
+	public void show() {
+		System.out.println(this.toString());
 	}
 }
