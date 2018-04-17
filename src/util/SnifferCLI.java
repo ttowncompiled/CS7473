@@ -22,6 +22,7 @@ public class SnifferCLI {
 	public static final String SPORT = "sport";
 	public static final String DPORT = "dport";
 	public static final String DEV = "dev";
+	public static final String RULES = "rules";
 	public static final String HELP = "help";
 	public static final String SHOW = "show";
 	
@@ -47,6 +48,7 @@ public class SnifferCLI {
 		this.options.addOption(OptionBuilder.hasArgs(2).withArgName("port1 port2").withValueSeparator(' ').withDescription("Print only packets where the source port is in the range port1-port2.").create(SnifferCLI.SPORT));
 		this.options.addOption(OptionBuilder.hasArgs(2).withArgName("port1 port2").withValueSeparator(' ').withDescription("Print only packets where the destination port is in the range port1-port2.").create(SnifferCLI.DPORT));
 		this.options.addOption(OptionBuilder.hasArg().withArgName("name").withDescription("The name of the network adapter to sniff. Otherwise, a network adapter is chosen by default.").create(SnifferCLI.DEV));
+		this.options.addOption(OptionBuilder.hasArg().withArgName("filename").withDescription("Read rules from file for IDS.").create(SnifferCLI.RULES));
 		this.options.addOption(OptionBuilder.withDescription("Prints usage information.").create(SnifferCLI.HELP));
 		this.options.addOption(OptionBuilder.withDescription("Prints available network adapters.").create(SnifferCLI.SHOW));
 		this.cmd = this.parse(args);
@@ -285,6 +287,14 @@ public class SnifferCLI {
 	
 	public String getDev() {
 		return this.cmd.getOptionValue(SnifferCLI.DEV);
+	}
+	
+	public boolean hasRules() {
+		return this.cmd.hasOption(SnifferCLI.RULES);
+	}
+	
+	public String getRules() {
+		return this.cmd.getOptionValue(SnifferCLI.RULES);
 	}
 	
 	public boolean hasHelp() {
