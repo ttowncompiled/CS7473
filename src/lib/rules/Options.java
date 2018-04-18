@@ -2,29 +2,15 @@ package lib.rules;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang3.StringUtils;
-
 import lib.Showable;
+import lib.options.*;
+import lib.packets.IPPacket;
 
 public class Options implements Showable {
 	
-	public static final String MSG = "msg";
-	public static final String LOG_TO = "logto";
-	public static final String TTL = "ttl";
-	public static final String TOS = "tos";
-	public static final String IP_ID = "id";
-	public static final String FRAG_OFF = "fragoffset";
 	public static final String IP_OPTION = "ipoption";
-	public static final String FRAG_BITS = "fragbits";
-	public static final String D_SIZE = "dsize";
 	public static final String FLAGS = "flags";
-	public static final String SEQ = "seq";
-	public static final String ACK = "ack";
-	public static final String I_TYPE = "itype";
-	public static final String I_CODE = "icode";
 	public static final String CONTENT = "content";
-	public static final String SAME_IP = "sameip";
-	public static final String SID = "sid";
 	
 	public static Options parseOptions(String options) {
 		if (options.charAt(0) != '(' && options.charAt(options.length()-1) != ')') {
@@ -45,93 +31,69 @@ public class Options implements Showable {
 	}
 	
 	private HashMap<String, String> options;
+	private AckOption ack;
+	private DSizeOption dsize;
+	private FragBitsOption fragbits;
+	private FragOffsetOption fragoffset;
+	private ICodeOption icode;
+	private ITypeOption itype;
+	private LogToOption logto;
+	private MsgOption msg;
+	private SameIPOption sameip;
+	private SeqOption seq;
+	private SIDOption sid;
+	private TOSOption tos;
+	private TTLOption ttl;
 	
 	public Options(HashMap<String, String> options) {
 		this.options = options;
+		if (this.options.containsKey(AckOption.ACK)) {
+			this.ack = AckOption.parseOption(this.options.get(AckOption.ACK));
+		}
+		if (this.options.containsKey(DSizeOption.DSIZE)) {
+			this.dsize = DSizeOption.parseOption(this.options.get(DSizeOption.DSIZE));
+		}
+		if (this.options.containsKey(FragBitsOption.FRAGBITS)) {
+			this.fragbits = FragBitsOption.parseOption(this.options.get(FragBitsOption.FRAGBITS));
+		}
+		if (this.options.containsKey(FragOffsetOption.FRAGOFF)) {
+			this.fragoffset = FragOffsetOption.parseOption(this.options.get(FragOffsetOption.FRAGOFF));
+		}
+		if (this.options.containsKey(ICodeOption.ICODE)) {
+			this.icode = ICodeOption.parseOption(this.options.get(ICodeOption.ICODE));
+		}
+		if (this.options.containsKey(ITypeOption.ITYPE)) {
+			this.itype = ITypeOption.parseOption(this.options.get(ITypeOption.ITYPE));
+		}
+		if (this.options.containsKey(LogToOption.LOGTO)) {
+			this.logto = LogToOption.parseOption(this.options.get(LogToOption.LOGTO));
+		}
+		if (this.options.containsKey(MsgOption.MSG)) {
+			this.msg = MsgOption.parseOption(this.options.get(MsgOption.MSG));
+		}
+		if (this.options.containsKey(SameIPOption.SAMEIP)) {
+			this.sameip = new SameIPOption(true);
+		}
+		if (this.options.containsKey(SeqOption.SEQ)) {
+			this.seq = SeqOption.parseOption(this.options.get(SeqOption.SEQ));
+		}
+		if (this.options.containsKey(SIDOption.SID)) {
+			this.sid = SIDOption.parseOption(this.options.get(SIDOption.SID));
+		}
+		if (this.options.containsKey(TOSOption.TOS)) {
+			this.tos = TOSOption.parseOption(this.options.get(TOSOption.TOS));
+		}
+		if (this.options.containsKey(TTLOption.TTL)) {
+			this.ttl = TTLOption.parseOption(this.options.get(TTLOption.TTL));
+		}
 	}
 	
 	public HashMap<String, String> getOptions() {
 		return this.options;
 	}
 	
-	public boolean hasMsg() {
-		return this.options.containsKey(Options.MSG);
-	}
-	
-	public String getMsg() {
-		return this.options.get(Options.MSG);
-	}
-	
-	public boolean hasLogTo() {
-		return this.options.containsKey(Options.LOG_TO);
-	}
-	
-	public String getLogTo() {
-		return this.options.get(Options.LOG_TO);
-	}
-	
-	public boolean hasValidTTL() {
-		return this.options.containsKey(Options.TTL) && StringUtils.isNumeric(this.options.get(Options.TTL));
-	}
-	
-	public int getTTL() {
-		return Integer.parseInt(this.options.get(Options.TTL));
-	}
-	
-	public boolean hasValidTOS() {
-		return this.options.containsKey(Options.TOS) && StringUtils.isNumeric(this.options.get(Options.TOS));
-	}
-	
-	public int getTOS() {
-		return Integer.parseInt(this.options.get(Options.TOS));
-	}
-	
-	public boolean hasValidIPID() {
-		return this.options.containsKey(Options.IP_ID) && StringUtils.isNumeric(this.options.get(Options.IP_ID));
-	}
-	
-	public int getIPID() {
-		return Integer.parseInt(this.options.get(Options.IP_ID));
-	}
-	
-	public boolean hasValidDSize() {
-		return this.options.containsKey(Options.D_SIZE) && StringUtils.isNumeric(this.options.get(Options.D_SIZE));
-	}
-	
-	public int getDSize() {
-		return Integer.parseInt(this.options.get(Options.D_SIZE));
-	}
-	
-	public boolean hasValidSeq() {
-		return this.options.containsKey(Options.SEQ) && StringUtils.isNumeric(this.options.get(Options.SEQ));
-	}
-	
-	public int getSeq() {
-		return Integer.parseInt(this.options.get(Options.SEQ));
-	}
-	
-	public boolean hasValidAck() {
-		return this.options.containsKey(Options.ACK) && StringUtils.isNumeric(this.options.get(Options.ACK));
-	}
-	
-	public int getAck() {
-		return Integer.parseInt(this.options.get(Options.ACK));
-	}
-	
-	public boolean hasValidIType() {
-		return this.options.containsKey(Options.I_TYPE) && StringUtils.isNumeric(this.options.get(Options.I_TYPE));
-	}
-	
-	public int getIType() {
-		return Integer.parseInt(this.options.get(Options.I_TYPE));
-	}
-	
-	public boolean hasValidICode() {
-		return this.options.containsKey(Options.I_CODE) && StringUtils.isNumeric(this.options.get(Options.I_CODE));
-	}
-	
-	public int getICode() {
-		return Integer.parseInt(this.options.get(Options.I_CODE));
+	public boolean checkPacket(IPPacket p) {
+		return false;
 	}
 
 	@Override
