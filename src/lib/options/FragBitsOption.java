@@ -32,7 +32,7 @@ public class FragBitsOption {
 		} else if (option.contains("!")) {
 			return new FragBitsOption(more, dont, res, FragBitsOption.NOT);
 		}
-		return null;
+		return new FragBitsOption(more, dont, res, FragBitsOption.AND);
 	}
 	
 	private boolean more;

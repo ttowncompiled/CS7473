@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class IDOption {
 
-	public static final String IP_ID = "id";
+	public static final String IPID = "id";
 	
 	public static IDOption parseOption(String option) {
 		if (! StringUtils.isNumeric(option)) {
