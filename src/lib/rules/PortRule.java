@@ -80,12 +80,12 @@ public class PortRule implements Showable {
 	}
 	
 	public boolean checkPort(short port) {
-		if (this.anyPort) {
+		if (this.isAny()) {
 			return true;
-		} else if (this.onlyPort1) {
-			return this.port1 == port;
-		} else if (this.lessThanPort2) {
-			return this.port2 >= port;
+		} else if (this.onlyPort1()) {
+			return port == this.port1;
+		} else if (this.onlyPort2()) {
+			return port <= this.port2;
 		}
 		return this.port1 <= port && port <= this.port2;
 	}

@@ -1,6 +1,7 @@
 package lib.rules;
 
 import lib.Showable;
+import lib.packets.Packet;
 import util.Config;
 
 public class ProtocolRule implements Showable {
@@ -44,6 +45,22 @@ public class ProtocolRule implements Showable {
 	
 	public boolean isAny() {
 		return this.protocol.equals(Rule.ANY);
+	}
+	
+	public boolean checkPacket(Packet p) {
+		if (this.isAny()) {
+			return true;
+		}
+		if (p.getType().equals(Config.ARP)) {
+			return this.isARP();
+		}
+		if (p.getType().equals(Config.IP)) {
+			if (this.isIP()) {
+				return true;
+			}
+			return p.getNext().getType().equals(this.getProtocol());
+		}
+		return false;
 	}
 	
 	@Override

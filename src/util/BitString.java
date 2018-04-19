@@ -104,6 +104,13 @@ public class BitString implements Showable {
 		this.spaced = spaced;
 	}
 	
+	public boolean get(int i) {
+		if (this.length() >= i) {
+			return false;
+		}
+		return this.S.charAt(i) == '1';
+	}
+	
 	public int length() {
 		return this.S.length();
 	}
@@ -255,6 +262,23 @@ public class BitString implements Showable {
 			rep.append(BitString.convert(this.S.substring(4*i, 4*(i+1))));
 		}
 		return new HexString(rep.toString(), this.spaced);
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return this.equals((BitString) o);
+	}
+	
+	public boolean equals(BitString b) {
+		if (this.length() != b.length()) {
+			return false;
+		}
+		for (int i = 0; i < b.length(); i++) {
+			if (this.get(i) != b.get(i)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	@Override

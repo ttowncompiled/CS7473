@@ -1,7 +1,12 @@
 package lib.rules;
 
 import lib.Showable;
+import lib.headers.ARPHeader;
+import lib.headers.IPHeader;
+import lib.headers.TCPHeader;
+import lib.headers.UDPHeader;
 import lib.packets.Packet;
+import util.Config;
 
 public class Rule implements Showable {
 	
@@ -52,7 +57,50 @@ public class Rule implements Showable {
 	}
 	
 	public boolean checkPacket(Packet p) {
+		return this.checkProtocol(p) && (this.checkIPMaskForwards(p) || this.checkIPMaskBackwards(p)) && this.checkOptions(p);
+	}
+	
+	private boolean checkProtocol(Packet p) {
+		return this.protocol.checkPacket(p);
+	}
+	
+	private boolean checkIPMaskForwards(Packet p) {
+		if (p.getType().equals(Config.IP)) {
+			IPHeader h1 = (IPHeader) p.getHeader();
+			if (this.srcIPMask.checkIP(h1.getSourceIPAddress()) && this.destIPMask.checkIP(h1.getDestinationIPAddress())) {
+				if (p.getNext().getType().equals(Config.TCP)) {
+					TCPHeader h2 = (TCPHeader) p.getNext().getHeader();
+					return this.srcPort.checkPort(h2.getSourcePortAddress()) && this.destPort.checkPort(h2.getDestinationPortAddress());
+				} else if (p.getNext().getType().equals(Config.UDP)) {
+					UDPHeader h2 = (UDPHeader) p.getNext().getHeader();
+					return this.srcPort.checkPort(h2.getSourcePortAddress()) && this.destPort.checkPort(h2.getDestinationPortAddress());
+				}
+			}
+		}
 		return false;
+	}
+	
+	private boolean checkIPMaskBackwards(Packet p) {
+		if (! this.direction.isBi()) {
+			return false;
+		}
+		if (p.getType().equals(Config.IP)) {
+			IPHeader h1 = (IPHeader) p.getHeader();
+			if (this.srcIPMask.checkIP(h1.getDestinationIPAddress()) && this.destIPMask.checkIP(h1.getSourceIPAddress())) {
+				if (p.getNext().getType().equals(Config.TCP)) {
+					TCPHeader h2 = (TCPHeader) p.getNext().getHeader();
+					return this.srcPort.checkPort(h2.getDestinationPortAddress()) && this.destPort.checkPort(h2.getSourcePortAddress());
+				} else if (p.getNext().getType().equals(Config.UDP)) {
+					UDPHeader h2 = (UDPHeader) p.getNext().getHeader();
+					return this.srcPort.checkPort(h2.getDestinationPortAddress()) && this.destPort.checkPort(h2.getSourcePortAddress());
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean checkOptions(Packet p) {
+		return true;
 	}
 	
 	@Override

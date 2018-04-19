@@ -3,6 +3,10 @@ package lib.rules;
 import org.apache.commons.lang3.StringUtils;
 
 import lib.Showable;
+import lib.packets.IPPacket;
+import lib.packets.Packet;
+import util.BitString;
+import util.Config;
 import util.Utils;
 
 public class IPMaskRule implements Showable {
@@ -41,6 +45,13 @@ public class IPMaskRule implements Showable {
 	
 	public boolean isAny() {
 		return this.any;
+	}
+	
+	public boolean checkIP(int ip) {
+		if (this.mask <= 0) {
+			return this.ip == ip;
+		}
+		return BitString.fromInt(this.ip).substring(this.mask).equals(BitString.fromInt(ip).substring(this.mask)); 
 	}
 	
 	@Override
