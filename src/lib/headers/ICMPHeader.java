@@ -3,6 +3,7 @@ package lib.headers;
 import util.BitString;
 import util.Config;
 import util.HexString;
+import util.Utils;
 
 public class ICMPHeader extends Header {
 	
@@ -105,7 +106,11 @@ public class ICMPHeader extends Header {
 		
 		rep.append(ICMPHeader.bitIndices());
 		rep.append(ICMPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromByte(this.ICMPType).spaced()).append("|").append(BitString.fromByte(this.code).spaced()).append("|").append(BitString.fromShort(this.checksum).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center("" + this.ICMPType, 15)).append("|")
+		   .append(Utils.center("" + this.code, 15)).append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.checksum), 31))
+		   .append("|\n");
 		rep.append(ICMPHeader.separator());
 		
 		return rep.toString();

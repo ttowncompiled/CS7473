@@ -3,6 +3,7 @@ package lib.headers;
 import util.BitString;
 import util.Config;
 import util.HexString;
+import util.Utils;
 
 public class UDPHeader extends Header {
 	
@@ -113,9 +114,14 @@ public class UDPHeader extends Header {
 		
 		rep.append(UDPHeader.bitIndices());
 		rep.append(UDPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromShort(this.sourcePortAddress).spaced()).append("|").append(BitString.fromShort(this.destinationPortAddress).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.sourcePortAddress), 31)).append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.destinationPortAddress), 31))
+		   .append("|\n");
 		rep.append(UDPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromShort(this.length).spaced()).append("|").append(BitString.fromShort(this.checksum).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center("" + this.length, 31)).append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.checksum), 31)).append("|\n");
 		rep.append(UDPHeader.separator());
 		
 		return rep.toString();

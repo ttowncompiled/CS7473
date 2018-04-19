@@ -26,12 +26,28 @@ public class Utils {
 		return rep.toString();
 	}
 	
+	public static String convertToMacAddress(long addr) {
+		return BitString.fromLong(addr).toHexString().toMACAddress();
+	}
+	
 	public static String formatHexString(HexString hex) {
 		StringBuilder rep = new StringBuilder();
 		for (int i = 0; i < hex.length(); i += 32) {
 			rep.append(hex.substring(i, i+32).spaced().toString()).append("\n");
 		}
 		return rep.append("\n").toString();
+	}
+	
+	public static String center(String s, int n) {
+		StringBuilder rep = new StringBuilder();
+		for (int i = 1; i <= n/2 - (s.length()+1)/2; i++) {
+			rep.append(" ");
+		}
+		rep.append(s);
+		while (rep.length() < n) {
+			rep.append(" ");
+		}
+		return rep.toString();
 	}
 	
 	public static String key(short id) {

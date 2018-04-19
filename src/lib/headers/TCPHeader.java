@@ -3,6 +3,7 @@ package lib.headers;
 import util.BitString;
 import util.Config;
 import util.HexString;
+import util.Utils;
 
 public class TCPHeader extends Header {
 	
@@ -179,21 +180,32 @@ public class TCPHeader extends Header {
 		
 		rep.append(TCPHeader.bitIndices());
 		rep.append(TCPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromShort(this.sourcePortAddress).spaced()).append("|").append(BitString.fromShort(this.destinationPortAddress).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.sourcePortAddress), 31)).append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.destinationPortAddress), 31))
+		   .append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromInt(this.sequenceNumber).spaced()).append("|\n");
+		rep.append("|").append(Utils.center("" + this.sequenceNumber, 63)).append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromInt(this.acknowledgementNumber).spaced()).append("|\n");
+		rep.append("|").append(Utils.center("" + this.acknowledgementNumber, 63)).append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromByte(this.dataOffset, 4).spaced()).append("|").append(BitString.fromByte(this.reserved, 3).spaced()).append("|").append(BitString.fromBits(this.flags).spaced()).append("|").append(BitString.fromShort(this.windowSize).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center("" + this.dataOffset, 7)).append("|")
+		   .append(BitString.fromByte(this.reserved, 3).spaced()).append("|")
+		   .append(BitString.fromBits(this.flags).spaced()).append("|")
+		   .append(Utils.center("" + this.windowSize, 31))
+		   .append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromShort(this.checksum).spaced()).append("|").append(BitString.fromShort(this.urgentPointer).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.checksum), 31)).append("|")
+		   .append(Utils.center("" + this.urgentPointer, 31))
+		   .append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|");
 		if (this.optionsPadding == null || this.optionsPadding.length == 0) {
 			rep.append(BitString.fromInt(0).spaced()).append("|\n");
 		} else {
-			rep.append(BitString.fromInt(this.optionsPadding[1]).spaced()).append("\n");
+			rep.append(BitString.fromInt(this.optionsPadding[0]).spaced()).append("\n");
 			for (int i = 1; i < this.optionsPadding.length-1; i++) {
 				rep.append(" ").append(BitString.fromInt(this.optionsPadding[i]).spaced()).append("\n");
 			}

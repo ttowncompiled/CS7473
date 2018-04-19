@@ -23,5 +23,10 @@ public class Config {
 	public static final String TELNET_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\telnet.dat";
 	public static final String RULES_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\rules.txt";
 	
+	public static final String WINNUKE_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\winnuke.dat";
+	public static final String JOLTUDP_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\joltUDP.dat";
+	public static final String TEARDROP_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\teardrop.dat";
+	public static final String JOLTPACKET_PATH = "C:\\Users\\ianri\\Workspace\\CS7473\\resources\\jolt2packet.dat";
+	
 	public static final int IP_MAX_LENGTH = 65548;
 }

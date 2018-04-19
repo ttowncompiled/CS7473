@@ -3,6 +3,7 @@ package lib.headers;
 import util.BitString;
 import util.Config;
 import util.HexString;
+import util.Utils;
 
 public class IPHeader extends Header {
 	
@@ -229,19 +230,31 @@ public class IPHeader extends Header {
 		
 		rep.append(IPHeader.bitIndices());
 		rep.append(IPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromByte(this.version, 4).spaced()).append("|").append(BitString.fromByte(this.IPHeaderLength, 4).spaced()).append("|").append(BitString.fromByte(this.typeOfService).spaced()).append("|").append(BitString.fromShort(this.totalLength).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center("" + this.version, 7)).append("|")
+		   .append(Utils.center("" + this.IPHeaderLength, 7)).append("|")
+		   .append(Utils.center("" + this.typeOfService, 15)).append("|")
+		   .append(Utils.center("" + this.totalLength, 31)).append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromShort(this.identification).spaced()).append("|").append(BitString.fromBits(this.flags).spaced()).append("|").append(BitString.fromShort(this.fragmentationOffset, 13).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center("" + this.identification, 31)).append("|")
+		   .append(BitString.fromBits(this.flags).spaced()).append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.fragmentationOffset), 25))
+		   .append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromByte(this.timeToLive).spaced()).append("|").append(BitString.fromByte(this.protocol).spaced()).append("|").append(BitString.fromShort(this.checksum).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center("" + this.timeToLive, 15)).append("|")
+		   .append(Utils.center("" + this.protocol, 15)).append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.checksum), 31))
+		   .append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromInt(this.sourceIPAddress).spaced()).append("|\n");
+		rep.append("|").append(Utils.center(Utils.convertToIPAddress(this.sourceIPAddress), 63)).append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromInt(this.destinationIPAddress).spaced()).append("|\n");
+		rep.append("|").append(Utils.center(Utils.convertToIPAddress(this.destinationIPAddress), 63)).append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|");
 		if (this.optionsPadding == null || this.optionsPadding.length == 0) {
-			rep.append(BitString.fromInt(0).spaced()).append("|\n");
+			rep.append(Utils.center("", 63)).append("|\n");
 		} else {
 			rep.append(BitString.fromInt(this.optionsPadding[1]).spaced()).append("\n");
 			for (int i = 1; i < this.optionsPadding.length-1; i++) {

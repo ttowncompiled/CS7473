@@ -3,6 +3,7 @@ package lib.headers;
 import util.BitString;
 import util.Config;
 import util.HexString;
+import util.Utils;
 
 public class EthernetHeader extends Header {
 	
@@ -105,7 +106,11 @@ public class EthernetHeader extends Header {
 		
 		rep.append(EthernetHeader.bitIndices());
 		rep.append(EthernetHeader.separator()).append("\n");
-		rep.append("|").append(BitString.fromLong(this.destinationMACAddress, 48).spaced()).append("|").append(BitString.fromLong(this.sourceMACAddress, 48).spaced()).append("|").append(BitString.fromShort(this.etherType).spaced()).append("|\n");
+		rep.append("|")
+		   .append(Utils.center(BitString.fromLong(this.destinationMACAddress, 48).toHexString().toMACAddress(), 95)).append("|")
+		   .append(Utils.center(BitString.fromLong(this.sourceMACAddress, 48).toHexString().toMACAddress(), 95)).append("|")
+		   .append(Utils.center("" + this.etherType, 31))
+		   .append("|\n");
 		rep.append(EthernetHeader.separator());
 		
 		return rep.toString();
