@@ -48,6 +48,9 @@ public class IPMaskRule implements Showable {
 	}
 	
 	public boolean checkIP(int ip) {
+		if (this.isAny()) {
+			return true;
+		}
 		if (this.mask <= 0) {
 			return this.ip == ip;
 		}

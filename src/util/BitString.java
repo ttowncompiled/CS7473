@@ -105,7 +105,7 @@ public class BitString implements Showable {
 	}
 	
 	public boolean get(int i) {
-		if (this.length() >= i) {
+		if (i < 0 || i >= this.length()) {
 			return false;
 		}
 		return this.S.charAt(i) == '1';

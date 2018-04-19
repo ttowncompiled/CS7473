@@ -26,6 +26,6 @@ public class RuleModule {
 	}
 	
 	private void handleRule(Rule r, Packet p) {
-		
+		r.show();
 	}
 }
