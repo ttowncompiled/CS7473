@@ -5,6 +5,7 @@ import java.util.HashMap;
 import lib.Showable;
 import lib.options.*;
 import lib.packets.IPPacket;
+import lib.packets.Packet;
 
 public class Options implements Showable {
 	
@@ -102,8 +103,11 @@ public class Options implements Showable {
 		return this.options;
 	}
 	
-	public boolean checkPacket(IPPacket p) {
-		return false;
+	public boolean checkPacket(Packet p) {
+		if (this.flags != null && ! this.flags.checkPacket(p)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

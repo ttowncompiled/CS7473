@@ -1,5 +1,9 @@
 package lib.options;
 
+import lib.headers.TCPHeader;
+import lib.packets.Packet;
+import util.Config;
+
 public class FlagsOption {
 	
 	public static final String FLAGS = "flags";
@@ -102,5 +106,17 @@ public class FlagsOption {
 			default:
 				return false;
 		}
+	}
+	
+	public boolean checkPacket(Packet p) {
+		if (p.getType().equals(Config.IP)) {
+			p = p.getNext();
+		}
+		if (p.getType().equals(Config.TCP)) {
+			TCPHeader header = (TCPHeader) p.getNext().getHeader();
+			boolean[] f = header.getFlags();
+			return this.checkFlags(f[8], f[7], f[6], f[5], f[4], f[3], f[2], f[1]);
+		}
+		return false;
 	}
 }

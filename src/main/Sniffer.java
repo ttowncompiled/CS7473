@@ -133,7 +133,7 @@ public class Sniffer {
 		}
 		if (p.getNext().getType().equals(Config.ARP)) {
 			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));
-			Sniffer.checkRules(rules, p.getNext());
+			Sniffer.checkRules(cli, rules, p.getNext());
 		}
 		if (p.getNext().getType().equals(Config.IP)) {
 			IPPacket ip = (IPPacket) p.getNext();
@@ -154,13 +154,13 @@ public class Sniffer {
 						Triple t = Sniffer.assemble(cli, frags);
 						Sniffer.log(cli, t);
 						p = new Packet(p.getHeader(), t.getDatagram());
-						Sniffer.checkRules(rules, p.getNext());
+						Sniffer.checkRules(cli, rules, p.getNext());
 					}
 				} else {
 					return;
 				}
 			} else {
-				Sniffer.checkRules(rules, p.getNext());
+				Sniffer.checkRules(cli, rules, p.getNext());
 			}
 		}
 		if (cli.hasHeaderInfo() && ! cli.hasType()) {
@@ -175,8 +175,11 @@ public class Sniffer {
 		Sniffer.checkCount(cli);
 	}
 	
-	private static void checkRules(RuleModule rules, Packet p) {
-		rules.checkPacket(p);
+	private static void checkRules(SnifferCLI cli, RuleModule rules, Packet p) throws IOException {
+		ArrayList<Rule> violations = rules.checkPacket(p);
+		for (Rule r : violations) {
+			Sniffer.log(cli, r.toString());
+		}
 	}
 	
 	private static boolean checkTimeout(SnifferCLI cli, String key) {

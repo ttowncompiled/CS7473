@@ -17,15 +17,17 @@ public class RuleModule {
 		return this;
 	}
 	
-	public void checkPacket(Packet p) {
+	public ArrayList<Rule> checkPacket(Packet p) {
+		ArrayList<Rule> violations = new ArrayList<>();
 		for (Rule r : this.rules) {
 			if (r.checkPacket(p)) {
-				this.handleRule(r, p);
+				violations.add(this.handleRule(r, p));
 			}
 		}
+		return violations;
 	}
 	
-	private void handleRule(Rule r, Packet p) {
-		r.show();
+	private Rule handleRule(Rule r, Packet p) {
+		return r;
 	}
 }
