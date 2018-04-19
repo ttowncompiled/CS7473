@@ -1,7 +1,7 @@
 package lib.rules;
 
 import lib.Showable;
-import lib.packets.IPPacket;
+import lib.packets.Packet;
 
 public class Rule implements Showable {
 	
@@ -51,7 +51,7 @@ public class Rule implements Showable {
 		this.options = options;
 	}
 	
-	public boolean checkPacket(IPPacket p) {
+	public boolean checkPacket(Packet p) {
 		return false;
 	}
 	

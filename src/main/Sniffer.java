@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import org.apache.commons.cli.ParseException;
 import org.jnetpcap.Pcap;
@@ -17,6 +19,8 @@ import org.jnetpcap.packet.PcapPacketHandler;
 import lib.Triple;
 import lib.headers.*;
 import lib.packets.*;
+import lib.rules.Rule;
+import lib.rules.RuleModule;
 import util.*;
 
 public class Sniffer {
@@ -30,15 +34,30 @@ public class Sniffer {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
 		SnifferCLI cli = new SnifferCLI(Sniffer.NAME, args);
+		RuleModule rules = Sniffer.readRules(cli);
 		if (cli.hasHelp()) {
 			Sniffer.help(cli);
 		} else if (cli.hasShow()) {
 			Sniffer.show(cli);
 		} else if (cli.hasInput()) {
-			Sniffer.sniffFile(cli);
+			Sniffer.sniffFile(cli, rules);
 		} else {
-			Sniffer.sniffNetwork(cli);
+			Sniffer.sniffNetwork(cli, rules);
 		}
+	}
+	
+	private static RuleModule readRules(SnifferCLI cli) throws FileNotFoundException {
+		if (! cli.hasRules()) {
+			return null;
+		}
+		RuleModule rules = new RuleModule();
+		Scanner scanner = new Scanner(new File(Config.RULES_PATH));
+		while (scanner.hasNextLine()) {
+			Rule rule = Rule.parseRule(scanner.nextLine());
+			rules.addRule(rule);
+		}
+		scanner.close();
+		return rules;
 	}
 	
 	private static void help(SnifferCLI cli) {
@@ -65,19 +84,19 @@ public class Sniffer {
 		}
 	}
 	
-	private static void sniffFile(SnifferCLI cli) throws FileNotFoundException, IOException {
+	private static void sniffFile(SnifferCLI cli, RuleModule rules) throws FileNotFoundException, IOException {
 		HexString[] hexes = HexFile.parse(cli.getInput());
 		Sniffer.start(cli);
 		for (int i = 0; i < hexes.length && (! cli.hasCount() || Sniffer.count < cli.getCount()); i++) {
 			HexString hex = hexes[i];
 			if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
 				Packet p = Sniffer.processEthernetPacket(cli, hex);
-				Sniffer.processPacket(cli, p);
+				Sniffer.processPacket(cli, rules, p);
 			}
 		}
 	}
 	
-	private static void sniffNetwork(SnifferCLI cli) throws IOException {
+	private static void sniffNetwork(SnifferCLI cli, RuleModule rules) throws IOException {
 		if (cli.hasDev()) {
 			Sniffer.adapter = Sniffer.openAdapter(cli.getDev());
 		} else {
@@ -99,7 +118,7 @@ public class Sniffer {
 				try {
 					if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
 						Packet p = Sniffer.processEthernetPacket(cli, hex);
-						Sniffer.processPacket(cli, p);
+						Sniffer.processPacket(cli, rules, p);
 					}
 				} catch (IOException e) {
 					Sniffer.adapter.close();
@@ -108,12 +127,13 @@ public class Sniffer {
 		}, cli);
 	}
 	
-	private static void processPacket(SnifferCLI cli, Packet p) throws IOException {
+	private static void processPacket(SnifferCLI cli, RuleModule rules, Packet p) throws IOException {
 		if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
 			return;
 		}
 		if (p.getNext().getType().equals(Config.ARP)) {
 			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));
+			Sniffer.checkRules(rules, p.getNext());
 		}
 		if (p.getNext().getType().equals(Config.IP)) {
 			IPPacket ip = (IPPacket) p.getNext();
@@ -134,10 +154,13 @@ public class Sniffer {
 						Triple t = Sniffer.assemble(cli, frags);
 						Sniffer.log(cli, t);
 						p = new Packet(p.getHeader(), t.getDatagram());
+						Sniffer.checkRules(rules, p.getNext());
 					}
 				} else {
 					return;
 				}
+			} else {
+				Sniffer.checkRules(rules, p.getNext());
 			}
 		}
 		if (cli.hasHeaderInfo() && ! cli.hasType()) {
@@ -150,6 +173,10 @@ public class Sniffer {
 			Sniffer.log(cli, p);
 		}
 		Sniffer.checkCount(cli);
+	}
+	
+	private static void checkRules(RuleModule rules, Packet p) {
+		rules.checkPacket(p);
 	}
 	
 	private static boolean checkTimeout(SnifferCLI cli, String key) {
