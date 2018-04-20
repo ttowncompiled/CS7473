@@ -154,16 +154,16 @@ public class ARPHeader extends Header {
 		
 		rep.append(ARPHeader.bitIndices());
 		rep.append(ARPHeader.separator()).append("\n");
-		rep.append("|").append(Utils.center("" + this.hardwareType, 31)).append("|\n");
+		rep.append("|").append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.hardwareType)), 31)).append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
-		rep.append("|").append(Utils.center("" + this.protocolType, 31)).append("|\n");
+		rep.append("|").append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.protocolType)), 31)).append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|")
-		   .append(Utils.center("" + this.hardwareAddressLength, 15)).append("|")
-		   .append(Utils.center("" + this.protocolAddressLength, 15))
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.hardwareAddressLength)), 15)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.protocolAddressLength)), 15))
 		   .append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
-		rep.append("|").append(Utils.center("" + this.operation, 31)).append("|\n");
+		rep.append("|").append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.operation)), 31)).append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(BitString.fromLong(this.senderHardwareAddress, 48).toHexString().toMACAddress(), 31)).append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");

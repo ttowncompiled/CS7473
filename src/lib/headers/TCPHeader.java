@@ -181,24 +181,24 @@ public class TCPHeader extends Header {
 		rep.append(TCPHeader.bitIndices());
 		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|")
-		   .append(Utils.center("" + Short.toUnsignedInt(this.sourcePortAddress), 31)).append("|")
-		   .append(Utils.center("" + Short.toUnsignedInt(this.destinationPortAddress), 31))
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.sourcePortAddress)), 31)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.destinationPortAddress)), 31))
 		   .append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
-		rep.append("|").append(Utils.center("" + this.sequenceNumber, 63)).append("|\n");
+		rep.append("|").append(Utils.center(Integer.toUnsignedString(this.sequenceNumber), 63)).append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
-		rep.append("|").append(Utils.center("" + this.acknowledgementNumber, 63)).append("|\n");
+		rep.append("|").append(Utils.center(Integer.toUnsignedString(this.acknowledgementNumber), 63)).append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|")
-		   .append(Utils.center("" + this.dataOffset, 7)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.dataOffset)), 7)).append("|")
 		   .append(BitString.fromByte(this.reserved, 3).spaced()).append("|")
 		   .append(BitString.fromBits(this.flags).spaced()).append("|")
-		   .append(Utils.center("" + this.windowSize, 31))
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.windowSize)), 31))
 		   .append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|")
-		   .append(Utils.center("" + Short.toUnsignedInt(this.checksum), 31)).append("|")
-		   .append(Utils.center("" + this.urgentPointer, 31))
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.checksum)), 31)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.urgentPointer)), 31))
 		   .append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|");

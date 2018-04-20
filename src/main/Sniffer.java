@@ -131,7 +131,6 @@ public class Sniffer {
 		if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
 			return;
 		}
-		p.getNext().show();
 		Sniffer.checkRules(cli, rules, p.getNext());
 		if (p.getNext().getType().equals(Config.ARP)) {
 			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));
@@ -174,6 +173,9 @@ public class Sniffer {
 	}
 	
 	private static void checkRules(SnifferCLI cli, RuleModule rules, Packet p) throws IOException {
+		if (rules == null) {
+			return;
+		}
 		ArrayList<Rule> violations = rules.checkPacket(p);
 		for (Rule r : violations) {
 			Sniffer.log(cli, r.toString());

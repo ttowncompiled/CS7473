@@ -231,21 +231,21 @@ public class IPHeader extends Header {
 		rep.append(IPHeader.bitIndices());
 		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|")
-		   .append(Utils.center("" + this.version, 7)).append("|")
-		   .append(Utils.center("" + this.IPHeaderLength, 7)).append("|")
-		   .append(Utils.center("" + this.typeOfService, 15)).append("|")
-		   .append(Utils.center("" + this.totalLength, 31)).append("|\n");
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.version)), 7)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.IPHeaderLength)), 7)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.typeOfService)), 15)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.totalLength)), 31)).append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|")
-		   .append(Utils.center("" + this.identification, 31)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.identification)), 31)).append("|")
 		   .append(BitString.fromBits(this.flags).spaced()).append("|")
-		   .append(Utils.center("" + Short.toUnsignedInt(this.fragmentationOffset), 25))
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.fragmentationOffset)), 25))
 		   .append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|")
-		   .append(Utils.center("" + Short.toUnsignedInt(this.timeToLive), 15)).append("|")
-		   .append(Utils.center("" + this.protocol, 15)).append("|")
-		   .append(Utils.center("" + Short.toUnsignedInt(this.checksum), 31))
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.timeToLive)), 15)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.protocol)), 15)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.checksum)), 31))
 		   .append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Utils.convertToIPAddress(this.sourceIPAddress), 63)).append("|\n");

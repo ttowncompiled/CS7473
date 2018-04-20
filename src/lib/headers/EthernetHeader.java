@@ -109,7 +109,7 @@ public class EthernetHeader extends Header {
 		rep.append("|")
 		   .append(Utils.center(BitString.fromLong(this.destinationMACAddress, 48).toHexString().toMACAddress(), 95)).append("|")
 		   .append(Utils.center(BitString.fromLong(this.sourceMACAddress, 48).toHexString().toMACAddress(), 95)).append("|")
-		   .append(Utils.center("" + this.etherType, 31))
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.etherType)), 31))
 		   .append("|\n");
 		rep.append(EthernetHeader.separator());
 		

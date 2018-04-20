@@ -107,9 +107,9 @@ public class ICMPHeader extends Header {
 		rep.append(ICMPHeader.bitIndices());
 		rep.append(ICMPHeader.separator()).append("\n");
 		rep.append("|")
-		   .append(Utils.center("" + this.ICMPType, 15)).append("|")
-		   .append(Utils.center("" + this.code, 15)).append("|")
-		   .append(Utils.center("" + Short.toUnsignedInt(this.checksum), 31))
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.ICMPType)), 15)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.code)), 15)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.checksum)), 31))
 		   .append("|\n");
 		rep.append(ICMPHeader.separator());
 		
