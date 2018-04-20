@@ -56,6 +56,30 @@ public class Rule implements Showable {
 		this.options = options;
 	}
 	
+	public boolean shouldAlert() {
+		return this.action != null && this.action.isAlert();
+	}
+	
+	public boolean hasOptions() {
+		return this.options != null;
+	}
+	
+	public boolean hasMsg() {
+		return this.hasOptions() && this.options.hasMsg();
+	}
+	
+	public String getMsg() {
+		return this.options.getMsg();
+	}
+	
+	public boolean hasLogTo() {
+		return this.hasOptions() && this.options.hasLogTo();
+	}
+	
+	public String getLogTo() {
+		return this.options.getLogTo();
+	}
+	
 	public boolean checkPacket(Packet p) {
 		return this.checkProtocol(p) && (this.checkIPMaskForwards(p) || this.checkIPMaskBackwards(p)) && this.checkOptions(p);
 	}

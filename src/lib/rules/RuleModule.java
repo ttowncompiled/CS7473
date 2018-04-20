@@ -12,6 +12,10 @@ public class RuleModule {
 		this.rules = new ArrayList<>();
 	}
 	
+	public ArrayList<Rule> getRules() {
+		return this.rules;
+	}
+	
 	public RuleModule addRule(Rule r) {
 		this.rules.add(r);
 		return this;

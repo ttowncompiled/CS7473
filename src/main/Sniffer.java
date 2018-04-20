@@ -26,6 +26,7 @@ import util.*;
 public class Sniffer {
 	
 	public static final String NAME = "Sniffer";
+	public static final String ROOT_FOLDER = "C:\\Users\\ianri\\Workspace\\CS7473";
 	private static Pcap adapter = null;
 
 	private static int count = 0;
@@ -76,7 +77,7 @@ public class Sniffer {
 		}
 	}
 	
-	private static void start(SnifferCLI cli) throws FileNotFoundException, IOException {
+	private static void start(SnifferCLI cli, RuleModule rules) throws FileNotFoundException, IOException {
 		if (cli.hasOutput()) {
 			FileWriter writer = new FileWriter(cli.getOutput(), false);
 			writer.append("");
@@ -86,7 +87,7 @@ public class Sniffer {
 	
 	private static void sniffFile(SnifferCLI cli, RuleModule rules) throws FileNotFoundException, IOException {
 		HexString[] hexes = HexFile.parse(cli.getInput());
-		Sniffer.start(cli);
+		Sniffer.start(cli, rules);
 		for (int i = 0; i < hexes.length && (! cli.hasCount() || Sniffer.count < cli.getCount()); i++) {
 			HexString hex = hexes[i];
 			if (Sniffer.isEthernetPacket(hex) && (! cli.hasType() || cli.hasValidType())) {
@@ -105,7 +106,7 @@ public class Sniffer {
 		if (Sniffer.adapter == null) {
 			return;
 		}
-		Sniffer.start(cli);
+		Sniffer.start(cli, rules);
 		Sniffer.adapter.loop(Pcap.LOOP_INFINITE, new PcapPacketHandler<SnifferCLI>() {
 			public void nextPacket(PcapPacket packet, SnifferCLI cli) {
 				System.out.println(">>> Packet received.");
@@ -178,7 +179,14 @@ public class Sniffer {
 		}
 		ArrayList<Rule> violations = rules.checkPacket(p);
 		for (Rule r : violations) {
-			Sniffer.log(cli, r.toString());
+			if (r.shouldAlert()) {
+				if (r.hasMsg()) {
+					Sniffer.log(cli, r.getMsg());
+				}
+				if (r.hasLogTo()) {
+					Sniffer.logTo(Sniffer.ROOT_FOLDER + r.getLogTo(), r.toString(), p);
+				}
+			}
 		}
 	}
 	
@@ -493,6 +501,16 @@ public class Sniffer {
 			}
 			System.out.println("");
 		}
+	}
+	
+	private static void logTo(String filename, String message, Packet p) throws IOException {
+		FileWriter writer = new FileWriter(filename, true);
+		writer.append(message);
+		writer.append("\n");
+		writer.append(p.toString());
+		writer.append("\n");
+		writer.append("\n");
+		writer.close();
 	}
 	
 	private static void checkCount(SnifferCLI cli) {

@@ -103,6 +103,22 @@ public class Options implements Showable {
 		return this.options;
 	}
 	
+	public boolean hasMsg() {
+		return this.msg != null;
+	}
+	
+	public String getMsg() {
+		return this.msg.getMsg();
+	}
+	
+	public boolean hasLogTo() {
+		return this.logto != null;
+	}
+	
+	public String getLogTo() {
+		return this.logto.getLogTo();
+	}
+	
 	public boolean checkPacket(Packet p) {
 		if (this.ack != null && ! this.ack.checkPacket(p)) {
 			return false;

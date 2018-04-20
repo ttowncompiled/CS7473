@@ -18,6 +18,6 @@ public class LogToOption {
 	}
 	
 	public String getLogTo() {
-		return this.logto;
+		return this.logto.substring(1, this.logto.length()-1);
 	}
 }
