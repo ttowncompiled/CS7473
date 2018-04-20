@@ -131,9 +131,10 @@ public class Sniffer {
 		if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
 			return;
 		}
+		p.show();
+		Sniffer.checkRules(cli, rules, p.getNext());
 		if (p.getNext().getType().equals(Config.ARP)) {
 			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));
-			Sniffer.checkRules(cli, rules, p.getNext());
 		}
 		if (p.getNext().getType().equals(Config.IP)) {
 			IPPacket ip = (IPPacket) p.getNext();
@@ -147,20 +148,17 @@ public class Sniffer {
 				} else if (Sniffer.checkAssembly(key)) {
 					ArrayList<IPPacket> frags = Sniffer.take(key);
 					if (! Sniffer.checkSize(frags)) {
-						System.out.println(">>> HERE");
 						Sniffer.log(cli, Triple.TooLargeTriple(frags.get(0), frags));
 						return;
 					} else {
 						Triple t = Sniffer.assemble(cli, frags);
 						Sniffer.log(cli, t);
 						p = new Packet(p.getHeader(), t.getDatagram());
-						Sniffer.checkRules(cli, rules, p.getNext());
+						Sniffer.checkRules(cli, rules, t.getDatagram());
 					}
 				} else {
 					return;
 				}
-			} else {
-				Sniffer.checkRules(cli, rules, p.getNext());
 			}
 		}
 		if (cli.hasHeaderInfo() && ! cli.hasType()) {

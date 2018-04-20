@@ -243,7 +243,7 @@ public class IPHeader extends Header {
 		   .append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|")
-		   .append(Utils.center("" + this.timeToLive, 15)).append("|")
+		   .append(Utils.center("" + Short.toUnsignedInt(this.timeToLive), 15)).append("|")
 		   .append(Utils.center("" + this.protocol, 15)).append("|")
 		   .append(Utils.center("" + Short.toUnsignedInt(this.checksum), 31))
 		   .append("|\n");
