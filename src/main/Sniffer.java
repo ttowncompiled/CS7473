@@ -131,7 +131,7 @@ public class Sniffer {
 		if (p == null || (cli.hasType() && (! cli.hasValidType() || ! Sniffer.checkType(p, cli.getType())))) {
 			return;
 		}
-		p.show();
+		p.getNext().show();
 		Sniffer.checkRules(cli, rules, p.getNext());
 		if (p.getNext().getType().equals(Config.ARP)) {
 			Sniffer.log(cli, Triple.ARPTriple(p.getNext()));

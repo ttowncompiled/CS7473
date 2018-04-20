@@ -68,6 +68,9 @@ public class Rule implements Showable {
 		if (p.getType().equals(Config.IP)) {
 			IPHeader h1 = (IPHeader) p.getHeader();
 			if (this.srcIPMask.checkIP(h1.getSourceIPAddress()) && this.destIPMask.checkIP(h1.getDestinationIPAddress())) {
+				if (this.srcPort.isAny() && this.destPort.isAny()) {
+					return true;
+				}
 				if (p.getNext().getType().equals(Config.TCP)) {
 					TCPHeader h2 = (TCPHeader) p.getNext().getHeader();
 					return this.srcPort.checkPort(h2.getSourcePortAddress()) && this.destPort.checkPort(h2.getDestinationPortAddress());
@@ -87,6 +90,9 @@ public class Rule implements Showable {
 		if (p.getType().equals(Config.IP)) {
 			IPHeader h1 = (IPHeader) p.getHeader();
 			if (this.srcIPMask.checkIP(h1.getDestinationIPAddress()) && this.destIPMask.checkIP(h1.getSourceIPAddress())) {
+				if (this.srcPort.isAny() && this.destPort.isAny()) {
+					return true;
+				}
 				if (p.getNext().getType().equals(Config.TCP)) {
 					TCPHeader h2 = (TCPHeader) p.getNext().getHeader();
 					return this.srcPort.checkPort(h2.getDestinationPortAddress()) && this.destPort.checkPort(h2.getSourcePortAddress());
@@ -100,7 +106,7 @@ public class Rule implements Showable {
 	}
 	
 	private boolean checkOptions(Packet p) {
-		return true;
+		return this.options.checkPacket(p);
 	}
 	
 	@Override

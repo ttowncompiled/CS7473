@@ -98,11 +98,11 @@ public class FlagsOption {
 		}
 		switch (this.code) {
 			case FlagsOption.AND:
-				return (this.fin && fin) && (this.syn && syn) && (this.rst && rst) && (this.psh && psh) && (this.ack && ack) && (this.urg && urg) && (this.cwr && cwr) && (this.ece && ece);
+				return (! this.fin || fin) && (! this.syn || syn) && (! this.rst || rst) && (! this.psh || psh) && (! this.ack || ack) && (! this.urg || urg) && (! this.cwr || cwr) && (! this.ece || ece);
 			case FlagsOption.OR:
 				return (this.fin && fin) || (this.syn && syn) || (this.rst && rst) || (this.psh && psh) || (this.ack && ack) || (this.urg && urg) || (this.cwr && cwr) || (this.ece && ece);
 			case FlagsOption.NOT:
-				return (this.fin && ! fin) && (this.syn && ! syn) && (this.rst && ! rst) && (this.psh && ! psh) && (this.ack && ! ack) && (this.urg && ! urg) && (this.cwr && ! cwr) && (this.ece && ! ece);
+				return (! this.fin || ! fin) && (! this.syn || ! syn) && (! this.rst || ! rst) && (! this.psh || ! psh) && (! this.ack || ! ack) && (! this.urg || ! urg) && (! this.cwr || ! cwr) && (! this.ece || ! ece);
 			default:
 				return false;
 		}
@@ -113,7 +113,7 @@ public class FlagsOption {
 			p = p.getNext();
 		}
 		if (p.getType().equals(Config.TCP)) {
-			TCPHeader header = (TCPHeader) p.getNext().getHeader();
+			TCPHeader header = (TCPHeader) p.getHeader();
 			boolean[] f = header.getFlags();
 			return this.checkFlags(f[8], f[7], f[6], f[5], f[4], f[3], f[2], f[1]);
 		}

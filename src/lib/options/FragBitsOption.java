@@ -54,11 +54,11 @@ public class FragBitsOption {
 	public boolean checkFragBits(boolean more, boolean dont, boolean res) {
 		switch (this.code) {
 			case FragBitsOption.AND:
-				return (this.more && more) && (this.dont && dont) && (this.res && res);
+				return (! this.more || more) && (! this.dont || dont) && (! this.res || res);
 			case FragBitsOption.OR:
 				return (this.more && more) || (this.dont && dont) || (this.res && res);
 			case FragBitsOption.NOT:
-				return (this.more && ! more) && (this.dont && ! dont) && (this.res && ! res);
+				return (! this.more || ! more) && (! this.dont || ! dont) && (! this.res || ! res);
 			default:
 				return false;
 		}
