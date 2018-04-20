@@ -2,6 +2,10 @@ package lib.options;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lib.headers.ICMPHeader;
+import lib.packets.Packet;
+import util.Config;
+
 public class ITypeOption {
 
 	public static final String ITYPE = "itype";
@@ -71,5 +75,16 @@ public class ITypeOption {
 			default:
 				return itype == this.itype;
 		}
+	}
+	
+	public boolean checkPacket(Packet p) {
+		if (p.getType().equals(Config.IP)) {
+			p = p.getNext();
+		}
+		if (p.getType().equals(Config.ICMP)) {
+			ICMPHeader header = (ICMPHeader) p.getHeader();
+			return this.checkIType(Byte.toUnsignedInt(header.getICMPType()));
+		}
+		return false;
 	}
 }

@@ -2,6 +2,10 @@ package lib.options;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lib.headers.IPHeader;
+import lib.packets.Packet;
+import util.Config;
+
 public class TOSOption {
 
 	public static final String TOS = "tos";
@@ -41,5 +45,13 @@ public class TOSOption {
 			default:
 				return tos == this.tos;
 		}
+	}
+	
+	public boolean checkPacket(Packet p) {
+		if (p.getType().equals(Config.IP)) {
+			IPHeader header = (IPHeader) p.getHeader();
+			return this.checkTOS(Byte.toUnsignedInt(header.getTypeOfService()));
+		}
+		return false;
 	}
 }

@@ -104,7 +104,40 @@ public class Options implements Showable {
 	}
 	
 	public boolean checkPacket(Packet p) {
+		if (this.ack != null && ! this.ack.checkPacket(p)) {
+			return false;
+		}
+		if (this.dsize != null && ! this.dsize.checkPacket(p)) {
+			return false;
+		}
 		if (this.flags != null && ! this.flags.checkPacket(p)) {
+			return false;
+		}
+		if (this.fragbits != null && ! this.fragbits.checkPacket(p)) {
+			return false;
+		}
+		if (this.fragoffset != null && ! this.fragoffset.checkPacket(p)) {
+			return false;
+		}
+		if (this.icode != null && ! this.icode.checkPacket(p)) {
+			return false;
+		}
+		if (this.ipid != null && ! this.ipid.checkPacket(p)) {
+			return false;
+		}
+		if (this.itype != null && ! this.itype.checkPacket(p)) {
+			return false;
+		}
+		if (this.sameip != null && ! this.sameip.checkPacket(p)) {
+			return false;
+		}
+		if (this.seq != null && ! this.seq.checkPacket(p)) {
+			return false;
+		}
+		if (this.tos != null && ! this.tos.checkPacket(p)) {
+			return false;
+		}
+		if (this.ttl != null && ! this.ttl.checkPacket(p)) {
 			return false;
 		}
 		return true;

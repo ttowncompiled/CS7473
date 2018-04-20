@@ -36,6 +36,13 @@ public class Packet implements Showable {
 		return this.header.getType();
 	}
 	
+	public int size() {
+		if (this.next == null) {
+			return 0;
+		}
+		return this.next.size();
+	}
+	
 	public int getByteLength() {
 		if (this.getNext() == null) {
 			return this.header.getHeaderByteLength();

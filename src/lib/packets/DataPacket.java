@@ -17,6 +17,11 @@ public class DataPacket extends Packet {
 	}
 	
 	@Override
+	public int size() {
+		return this.data.length()/2;
+	}
+	
+	@Override
 	public HexString toHexString() {
 		return this.data;
 	}

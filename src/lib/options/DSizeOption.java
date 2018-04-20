@@ -2,6 +2,8 @@ package lib.options;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lib.packets.Packet;
+
 public class DSizeOption {
 
 	public static final String DSIZE = "dsize";
@@ -71,5 +73,9 @@ public class DSizeOption {
 			default:
 				return dsize == this.dsize;
 		}
+	}
+	
+	public boolean checkPacket(Packet p) {
+		return this.checkDSize(p.size());
 	}
 }

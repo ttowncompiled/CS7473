@@ -2,6 +2,10 @@ package lib.options;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lib.headers.ICMPHeader;
+import lib.packets.Packet;
+import util.Config;
+
 public class ICodeOption {
 
 	public static final String ICODE = "icode";
@@ -71,5 +75,16 @@ public class ICodeOption {
 			default:
 				return icode == this.icode;
 		}
+	}
+	
+	public boolean checkPacket(Packet p) {
+		if (p.getType().equals(Config.IP)) {
+			p = p.getNext();
+		}
+		if (p.getType().equals(Config.ICMP)) {
+			ICMPHeader header = (ICMPHeader) p.getHeader();
+			return this.checkICode(Byte.toUnsignedInt(header.getCode()));
+		}
+		return false;
 	}
 }

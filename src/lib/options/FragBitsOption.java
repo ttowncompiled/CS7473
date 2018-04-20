@@ -1,5 +1,9 @@
 package lib.options;
 
+import lib.headers.IPHeader;
+import lib.packets.Packet;
+import util.Config;
+
 public class FragBitsOption {
 
 	public static final String FRAGBITS = "fragbits";
@@ -58,5 +62,14 @@ public class FragBitsOption {
 			default:
 				return false;
 		}
+	}
+	
+	public boolean checkPacket(Packet p) {
+		if (p.getType().equals(Config.IP)) {
+			IPHeader header = (IPHeader) p.getHeader();
+			boolean[] f = header.getFlags();
+			return this.checkFragBits(f[2], f[1], f[0]);
+		}
+		return false;
 	}
 }

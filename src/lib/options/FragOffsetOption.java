@@ -2,6 +2,10 @@ package lib.options;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lib.headers.IPHeader;
+import lib.packets.Packet;
+import util.Config;
+
 public class FragOffsetOption {
 	
 	public static final String FRAGOFF = "fragoffset";
@@ -57,5 +61,13 @@ public class FragOffsetOption {
 			default:
 				return offset == this.offset;
 		}
+	}
+	
+	public boolean checkPacket(Packet p) {
+		if (p.getType().equals(Config.IP)) {
+			IPHeader header = (IPHeader) p.getHeader();
+			return this.checkFragOffset(Short.toUnsignedInt(header.getFragmentationOffset()));
+		}
+		return false;
 	}
 }

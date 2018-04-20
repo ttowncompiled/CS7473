@@ -2,6 +2,10 @@ package lib.options;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lib.headers.IPHeader;
+import lib.packets.Packet;
+import util.Config;
+
 public class TTLOption {
 	
 	public static final String TTL = "ttl";
@@ -102,5 +106,13 @@ public class TTLOption {
 			default:
 				return ttl == this.ttl;
 		}
+	}
+	
+	public boolean checkPacket(Packet p) {
+		if (p.getType().equals(Config.IP)) {
+			IPHeader header = (IPHeader) p.getHeader();
+			return this.checkTTL(Byte.toUnsignedInt(header.getTimeToLive()));
+		}
+		return false;
 	}
 }
