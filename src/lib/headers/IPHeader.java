@@ -13,7 +13,8 @@ public class IPHeader extends Header {
 	
 	private byte version;
 	private byte IPHeaderLength;
-	private byte typeOfService;
+	private byte dscp;
+	private byte ecn;
 	private short totalLength;
 	private short identification;
 	private boolean[] flags;
@@ -31,7 +32,8 @@ public class IPHeader extends Header {
 		}
 		byte version = packet.substring(0, 4).toByte();
 		byte IHL = packet.substring(4, 8).toByte();
-		byte typeOfService = packet.substring(8, 16).toByte();
+		byte dscp = packet.substring(8, 14).toByte();
+		byte ecn = packet.substring(14, 16).toByte();
 		short totalLength = packet.substring(16, 32).toShort();
 		short identification = packet.substring(32, 48).toShort();
 		boolean[] flags = packet.substring(48, 51).toBits();
@@ -48,20 +50,21 @@ public class IPHeader extends Header {
 				options[i] = packet.substring(160+32*i, 192+32*i).toInt();
 			}
 		}
-		return new IPHeader(version, IHL, typeOfService, totalLength, identification, flags, fragOffset, timeToLive, protocol, checksum, source, dest, options);
+		return new IPHeader(version, IHL, dscp, ecn, totalLength, identification, flags, fragOffset, timeToLive, protocol, checksum, source, dest, options);
 	}
 	
 	public static IPHeader Datagram(IPHeader header, short totalLength) {
 		boolean[] flags = new boolean[3];
 		flags[1] = true;
-		return new IPHeader(header.version, header.IPHeaderLength, header.typeOfService, totalLength, header.identification, flags, (short) 0, header.timeToLive, header.protocol, header.checksum, header.sourceIPAddress, header.destinationIPAddress, header.optionsPadding);
+		return new IPHeader(header.version, header.IPHeaderLength, header.dscp, header.ecn, totalLength, header.identification, flags, (short) 0, header.timeToLive, header.protocol, header.checksum, header.sourceIPAddress, header.destinationIPAddress, header.optionsPadding);
 	}
 
-	public IPHeader(byte version, byte IHL, byte typeOfService, short totalLength, short identification, boolean[] flags, short fragOffset, byte timeToLive, byte protocol, short checksum, int source, int dest, int[] optionsPadding) {
+	public IPHeader(byte version, byte IHL, byte dscp, byte ecn, short totalLength, short identification, boolean[] flags, short fragOffset, byte timeToLive, byte protocol, short checksum, int source, int dest, int[] optionsPadding) {
 		super(Config.IP);
 		this.version = version;
 		this.IPHeaderLength = IHL;
-		this.typeOfService = typeOfService;
+		this.dscp = dscp;
+		this.ecn = ecn;
 		this.totalLength = totalLength;
 		this.identification = identification;
 		this.flags = flags;
@@ -82,8 +85,12 @@ public class IPHeader extends Header {
 		return this.IPHeaderLength;
 	}
 	
-	public byte getTypeOfService() {
-		return this.typeOfService;
+	public byte getDSCP() {
+		return this.dscp;
+	}
+	
+	public byte getECN() {
+		return this.ecn;
 	}
 	
 	public short getTotalLength() {
@@ -169,7 +176,8 @@ public class IPHeader extends Header {
 	public HexString toHexString() {
 		BitString bits = BitString.fromByte(this.version, 4)
 								  .concat(BitString.fromByte(this.IPHeaderLength, 4))
-								  .concat(BitString.fromByte(this.typeOfService))
+								  .concat(BitString.fromByte(this.dscp, 6))
+								  .concat(BitString.fromByte(this.ecn, 2))
 								  .concat(BitString.fromShort(this.totalLength))
 								  .concat(BitString.fromShort(this.identification))
 								  .concat(BitString.fromBits(this.flags))
@@ -230,16 +238,39 @@ public class IPHeader extends Header {
 		
 		rep.append(IPHeader.bitIndices());
 		rep.append(IPHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("Version", 7)).append("|")
+		   .append(Utils.center("IHL", 7)).append("|")
+		   .append(Utils.center("DSCP", 11)).append("|")
+		   .append(Utils.center("ECN", 3)).append("|")
+		   .append(Utils.center("Total Length", 31)).append("|\n");
+		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.version)), 7)).append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.IPHeaderLength)), 7)).append("|")
-		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.typeOfService)), 15)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.dscp)), 11)).append("|")
+		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.ecn)), 3)).append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.totalLength)), 31)).append("|\n");
+		rep.append(IPHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("Identification", 31)).append("|")
+		   .append(Utils.center("Flags", 5)).append("|")
+		   .append(Utils.center("Fragment Offset", 25))
+		   .append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.identification)), 31)).append("|")
 		   .append(BitString.fromBits(this.flags).spaced()).append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.fragmentationOffset)), 25))
+		   .append("|\n");
+		rep.append(IPHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("Time To Live", 15)).append("|")
+		   .append(Utils.center("Protocol", 15)).append("|")
+		   .append(Utils.center("Checksum", 31))
 		   .append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|")
@@ -248,9 +279,18 @@ public class IPHeader extends Header {
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.checksum)), 31))
 		   .append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Source IP Address", 63)).append("|\n");
+		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Utils.convertToIPAddress(this.sourceIPAddress), 63)).append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Destination IP Address", 63)).append("|\n");
+		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Utils.convertToIPAddress(this.destinationIPAddress), 63)).append("|\n");
+		rep.append(IPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Options", 63)).append("|\n");
 		rep.append(IPHeader.separator()).append("\n");
 		rep.append("|");
 		if (this.optionsPadding == null || this.optionsPadding.length == 0) {

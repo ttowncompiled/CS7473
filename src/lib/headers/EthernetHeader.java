@@ -106,6 +106,13 @@ public class EthernetHeader extends Header {
 		
 		rep.append(EthernetHeader.bitIndices());
 		rep.append(EthernetHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("Destination MAC Address", 95)).append("|")
+		   .append(Utils.center("Source MAC Address", 95)).append("|")
+		   .append(Utils.center("EtherType", 31))
+		   .append("|\n");
+		rep.append(EthernetHeader.separator()).append("\n");
 		rep.append("|")
 		   .append(Utils.center(BitString.fromLong(this.destinationMACAddress, 48).toHexString().toMACAddress(), 95)).append("|")
 		   .append(Utils.center(BitString.fromLong(this.sourceMACAddress, 48).toHexString().toMACAddress(), 95)).append("|")

@@ -180,14 +180,34 @@ public class TCPHeader extends Header {
 		
 		rep.append(TCPHeader.bitIndices());
 		rep.append(TCPHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("Source Port", 31)).append("|")
+		   .append(Utils.center("Destination Port", 31))
+		   .append("|\n");
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.sourcePortAddress)), 31)).append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.destinationPortAddress)), 31))
 		   .append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Sequence Number", 63)).append("|\n");
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Integer.toUnsignedString(this.sequenceNumber), 63)).append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Acknowledgement Number", 63)).append("|\n");
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Integer.toUnsignedString(this.acknowledgementNumber), 63)).append("|\n");
+		rep.append(TCPHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("Offset", 7)).append("|")
+		   .append(Utils.center("Res", 5)).append("|")
+		   .append(Utils.center("Flags", 17)).append("|")
+		   .append(Utils.center("Window", 31))
+		   .append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.dataOffset)), 7)).append("|")
@@ -196,10 +216,19 @@ public class TCPHeader extends Header {
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.windowSize)), 31))
 		   .append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("Checksum", 31)).append("|")
+		   .append(Utils.center("Urgent Pointer", 31))
+		   .append("|\n");
+		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.checksum)), 31)).append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.urgentPointer)), 31))
 		   .append("|\n");
+		rep.append(TCPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Options/Padding", 63)).append("|\n");
 		rep.append(TCPHeader.separator()).append("\n");
 		rep.append("|");
 		if (this.optionsPadding == null || this.optionsPadding.length == 0) {
@@ -211,6 +240,9 @@ public class TCPHeader extends Header {
 			}
 			rep.append(" ").append(BitString.fromInt(this.optionsPadding[this.optionsPadding.length-1]).spaced()).append("|\n");
 		}
+		rep.append(TCPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Data", 63)).append("|\n");
 		rep.append(TCPHeader.separator());
 		
 		return rep.toString();

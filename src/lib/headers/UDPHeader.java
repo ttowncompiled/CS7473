@@ -114,14 +114,28 @@ public class UDPHeader extends Header {
 		
 		rep.append(UDPHeader.bitIndices());
 		rep.append(UDPHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("Source Port", 31)).append("|")
+		   .append(Utils.center("Destination Port", 31))
+		   .append("|\n");
+		rep.append(UDPHeader.separator()).append("\n");
 		rep.append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.sourcePortAddress)), 31)).append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.destinationPortAddress)), 31))
 		   .append("|\n");
 		rep.append(UDPHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("Length", 31)).append("|")
+		   .append(Utils.center("Checksum", 31)).append("|\n");
+		rep.append(UDPHeader.separator()).append("\n");
 		rep.append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.length)), 31)).append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.checksum)), 31)).append("|\n");
+		rep.append(UDPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Data", 63)).append("|\n");
 		rep.append(UDPHeader.separator());
 		
 		return rep.toString();

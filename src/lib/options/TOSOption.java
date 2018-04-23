@@ -50,7 +50,7 @@ public class TOSOption {
 	public boolean checkPacket(Packet p) {
 		if (p.getType().equals(Config.IP)) {
 			IPHeader header = (IPHeader) p.getHeader();
-			return this.checkTOS(Byte.toUnsignedInt(header.getTypeOfService()));
+			return this.checkTOS(Byte.toUnsignedInt(header.getDSCP()));
 		}
 		return false;
 	}

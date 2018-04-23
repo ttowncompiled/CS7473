@@ -40,7 +40,7 @@ public class Utils {
 	
 	public static String center(String s, int n) {
 		StringBuilder rep = new StringBuilder();
-		for (int i = 1; i <= n/2 - (s.length()+1)/2; i++) {
+		for (int i = 1; i <= (n+1)/2 - (s.length()+1)/2; i++) {
 			rep.append(" ");
 		}
 		rep.append(s);

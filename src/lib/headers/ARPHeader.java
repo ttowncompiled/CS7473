@@ -149,30 +149,72 @@ public class ARPHeader extends Header {
 		return rep.toString();
 	}
 	
+	private static String longSeparator() {
+		StringBuilder rep = new StringBuilder();
+		
+		rep.append("+");
+		for (int i = 0; i < 63; i++) {
+			rep.append(i % 2 == 0 ? "-" : "+");
+		}
+		rep.append("+");
+		
+		return rep.toString();
+	}
+	
 	public String toString() {
 		StringBuilder rep = new StringBuilder();
 		
 		rep.append(ARPHeader.bitIndices());
 		rep.append(ARPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Hardware Type", 31)).append("|\n");
+		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.hardwareType)), 31)).append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Protocol Type", 31)).append("|\n");
+		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.protocolType)), 31)).append("|\n");
+		rep.append(ARPHeader.separator()).append("\n");
+		
+		rep.append("|")
+		   .append(Utils.center("HLEN", 15)).append("|")
+		   .append(Utils.center("PLEN", 15))
+		   .append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.hardwareAddressLength)), 15)).append("|")
 		   .append(Utils.center(Integer.toUnsignedString(Byte.toUnsignedInt(this.protocolAddressLength)), 15))
 		   .append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Operation", 31)).append("|\n");
+		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Integer.toUnsignedString(Short.toUnsignedInt(this.operation)), 31)).append("|\n");
+		rep.append(ARPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Sender Hardware Address", 31)).append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(BitString.fromLong(this.senderHardwareAddress, 48).toHexString().toMACAddress(), 31)).append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Sender Protocol Address", 31)).append("|\n");
+		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Utils.convertToIPAddress(this.senderProtocolAddress), 31)).append("|\n");
+		rep.append(ARPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Target Hardware Address", 31)).append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(BitString.fromLong(this.targetHardwareAddress, 48).toHexString().toMACAddress(), 31)).append("|\n");
 		rep.append(ARPHeader.separator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Target Protocol Address", 31)).append("|\n");
+		rep.append(ARPHeader.separator()).append("\n");
 		rep.append("|").append(Utils.center(Utils.convertToIPAddress(this.targetProtocolAddress), 31)).append("|\n");
-		rep.append(ARPHeader.separator());
+		rep.append(ARPHeader.longSeparator()).append("\n");
+		
+		rep.append("|").append(Utils.center("Data", 63)).append("|\n");
+		rep.append(ARPHeader.longSeparator());
 		
 		return rep.toString();
 	}
